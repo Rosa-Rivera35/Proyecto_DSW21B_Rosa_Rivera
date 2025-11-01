@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Equipo — Colaboradores</title>
+  <meta name="description" content="Página de colaboradores: nombres, títulos, roles, contacto, biografías y fotos del equipo." />
+
+  <!-- Tailwind CDN (rápido para prototipos) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Meta Open Graph simple -->
+  <meta property="og:title" content="Equipo — Colaboradores" />
+  <meta property="og:description" content="Conoce al equipo: roles, experiencia y contacto." />
+
+  <style>
+    /* Pequeñas mejoras al estilo por encima de Tailwind */
+    .card-photo { object-fit: cover; height: 200px; width: 100%; }
+    @media (min-width: 1024px) { .card-photo { height: 240px; } }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-semibold">Equipo</h1>
+        <p class="text-sm text-gray-500">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>
+      </div>
+      <nav class="text-sm text-gray-600">
+        <a href="#equipo" class="mr-4 hover:underline">Miembros</a>
+        <a href="#contacto" class="hover:underline">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- Intro -->
+    <section class="mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-sm">
+        <h2 class="text-2xl font-bold">Nuestros colaboradores</h2>
+        <p class="mt-2 text-gray-600">Aquí puedes ver la información principal de cada miembro: su rol, una biografía breve, y los datos de contacto. Haz clic en la foto para verla en tamaño completo.</p>
+      </div>
+    </section>
+
+    <!-- Equipo -->
+    <section id="equipo" class="mb-12">
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+
+        <!-- Miembro 1 -->
+        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+          <button class="w-full p-0 m-0 block" aria-label="Ver foto de Rosa Rivera" onclick="openLightbox('img/RosaRivera.jpg')">
+            <img src="img/RosaRivera.jpg" alt="Rosa Rivera — Programadora" class="card-photo w-full">
+          </button>
+
+          <div class="p-6">
+            <h3 class="text-lg font-semibold">Rosa Michelle Rivera Ibarra</h3>
+            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+
+            <!--<div class="mt-4 text-gray-700 text-sm">
+              <p><strong>Rol:</strong> </p>
+            </div>-->
+
+            <div class="mt-4 text-sm text-gray-600">
+              <p><strong>Biografía:</strong> Soy una programadora en formación, apasionada por la tecnología y el desarrollo de soluciones digitales. Me considero una persona responsable, comprometida y con gran disposición para aprender y adaptarme a nuevos desafíos. Cuento con conocimientos en desarrollo web y aplicaciones, adquiridos durante mi formación técnica en la Escuela Especializada en Ingeniería ITCA-FEPADE Megatec (Zacatecoluca) y a través de cursos complementarios en áreas tecnológicas. Me destaco por mi capacidad de adaptación, trabajo en equipo y resolución de problemas, siempre con una actitud proactiva y el deseo de seguir creciendo profesionalmente en el ámbito de la programación.</p>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3 items-center">
+              <a href="mailto:ri1122881@gmail.com" class="text-sm hover:underline">ri1122881@gmail.com</a>
+              <a href="tel:+50375138938" class="text-sm hover:underline">+503 7513 8938</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Miembro 2 -->
+        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+          <button class="w-full p-0 m-0 block" aria-label="Ver foto de Sindy Arias" onclick="openLightbox('#')">
+            <img src="#" alt="Sindy Arias — Programadora" class="card-photo w-full">
+          </button>
+
+          <div class="p-6">
+            <h3 class="text-lg font-semibold">Sindy Alicia Arias González</h3>
+            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+
+            <div class="mt-4 text-sm text-gray-600">
+              <p><strong>Biografía:</strong> </p>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3 items-center">
+              <a href="mailto:@.com" class="text-sm hover:underline">@.com</a>
+              <a href="tel:+503" class="text-sm hover:underline">+503 </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Miembro 3 -->
+        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+          <button class="w-full p-0 m-0 block" aria-label="Ver foto de Daeleny Mendoza" onclick="openLightbox('#')">
+            <img src="#" alt="Daeleny Mendoza — Programadora" class="card-photo w-full">
+          </button>
+
+          <div class="p-6">
+            <h3 class="text-lg font-semibold">Daeleny Yamidia Mendoza Chavez</h3>
+            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+
+            <div class="mt-4 text-sm text-gray-600">
+              <p><strong>Biografía:</strong> </p>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3 items-center">
+              <a href="mailto:@.com" class="text-sm hover:underline">@.com</a>
+              <a href="tel:+503" class="text-sm hover:underline">+503 </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Miembro 4 -->
+        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+          <button class="w-full p-0 m-0 block" aria-label="Ver foto de Javier Peña" onclick="openLightbox('https://images.unsplash.com/photo-1545996124-1eb7f3b3a7d7?q=80&w=1600&auto=format&fit=crop')">
+            <img src="https://images.unsplash.com/photo-1545996124-1eb7f3b3a7d7?q=80&w=800&auto=format&fit=crop" alt="Javier Peña — analista de datos" class="card-photo w-full">
+          </button>
+
+          <div class="p-6">
+            <h3 class="text-lg font-semibold">Javier Peña</h3>
+            <p class="text-sm text-indigo-600 font-medium">Analista de datos</p>
+
+            <div class="mt-4 text-gray-700 text-sm">
+              <p><strong>Rol:</strong> Extrae insights, crea dashboards y apoya decisiones basadas en datos mediante análisis cuantitativos y modelos simples.</p>
+            </div>
+
+            <div class="mt-4 text-sm text-gray-600">
+              <p><strong>Biografía:</strong> Ingeniero con experiencia en visualización y herramientas BI. Ha trabajado en proyectos de métricas clave y optimización de producto.</p>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3 items-center">
+              <a href="mailto:javier.pena@ejemplo.com" class="text-sm hover:underline">javier.pena@ejemplo.com</a>
+              <a href="tel:+50360123459" class="text-sm hover:underline">+503 6012 3459</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Sección de contacto general (opcional) -->
+    <section id="contacto" class="mb-12">
+      <div class="bg-white p-6 rounded-2xl shadow-sm">
+        <h3 class="text-lg font-semibold">Contacto general</h3>
+        <p class="mt-2 text-sm text-gray-600">Para consultas generales, envía un correo a <a href="mailto:contacto@ejemplo.com" class="hover:underline">contacto@ejemplo.com</a> o llama al <a href="tel:+50360000000" class="hover:underline">+503 6000 0000</a>.</p>
+      </div>
+    </section>
+
+    <!-- Notas: cómo editar 
+    <section class="text-sm text-gray-500">
+      <p><strong>Cómo personalizar esta página:</strong> reemplaza los bloques <code>&lt;article&gt;</code> para añadir/quitar miembros; cambia las URLs de las imágenes por fotos de alta calidad (formato .jpg o .webp recomendados). Mantén atributos <code>alt</code> descriptivos para accesibilidad.</p>
+    </section>-->
+
+  </main>
+
+  <footer class="bg-white border-t mt-12">
+    <div class="max-w-7xl mx-auto p-4 text-center text-sm text-gray-500">© <span id="year"></span> M3 — Rosa Rivera</div>
+  </footer>
+
+  <!-- Lightbox simple -->
+  <div id="lightbox" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50" role="dialog" aria-modal="true" onclick="closeLightbox()">
+    <div class="max-w-4xl w-full p-6">
+      <img id="lightbox-img" src="" alt="Foto ampliada" class="w-full rounded-lg shadow-lg max-h-[80vh] object-contain">
+      <div class="text-right mt-3">
+        <button class="bg-white text-gray-800 px-4 py-2 rounded-lg shadow" onclick="closeLightbox(event)">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Año en el pie de página
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Lightbox básico
+    function openLightbox(src) {
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      img.src = src;
+      lb.classList.remove('hidden');
+      lb.classList.add('flex');
+    }
+    function closeLightbox(e) {
+      if (e) e.stopPropagation();
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      img.src = '';
+      lb.classList.remove('flex');
+      lb.classList.add('hidden');
+    }
+
+    // Mejora de accesibilidad: cerrar con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

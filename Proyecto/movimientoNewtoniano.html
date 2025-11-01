@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Simulador de Movimiento Newtoniano</title>
+<style>
+  body { font-family: Arial; background: #eef2f3; margin: 0; padding: 0; text-align: center; }
+  h1 { background: #2c3e50; color: white; padding: 10px; }
+  #canvas { background: white; border: 2px solid #333; margin-top: 20px; }
+  .inputs { margin: 20px; }
+  label { margin: 5px; }
+  button { padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+  button:hover { background: #2980b9; }
+  .data { margin-top: 20px; background: #fff; display: inline-block; padding: 10px; border-radius: 10px; width: 300px; }
+</style>
+</head>
+<body>
+<h1>Simulador de Movimiento Newtoniano</h1>
+
+<div class="inputs">
+  <label>Masa (kg): <input type="number" id="masa" value="2" step="0.1"></label>
+  <label>Fuerza (N): <input type="number" id="fuerza" value="4" step="0.1"></label>
+  <button onclick="simular()">Simular</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+</div>
+
+<canvas id="canvas" width="600" height="200"></canvas>
+
+<div class="data" id="resultados"></div>
+
+<script>
+let animacion = null;
+let datos = [];
+
+function simular() {
+  cancelarAnimacion();
+
+  const m = parseFloat(document.getElementById('masa').value);
+  const F = parseFloat(document.getElementById('fuerza').value);
+  const a = F / m; // Segunda ley de Newton
+
+  document.getElementById('resultados').innerHTML = `
+    <h3>Resultados:</h3>
+    Fuerza = ${F.toFixed(2)} N<br>
+    Masa = ${m.toFixed(2)} kg<br>
+    Aceleración = <b>${a.toFixed(2)} m/s²</b><br>
+  `;
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let x = 50;  // posición inicial
+  let v = 0;   // velocidad inicial
+  const dt = 0.05; // intervalo de tiempo
+  datos = [];
+
+  function draw(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Dibujar bloque
+    ctx.fillStyle = "#e67e22";
+    ctx.fillRect(x, 130, 40, 40);
+
+    // Dibujar piso
+    ctx.beginPath();
+    ctx.moveTo(0, 170);
+    ctx.lineTo(canvas.width, 170);
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Guardar datos para gráficas
+    datos.push({ tiempo: t, posicion: x, velocidad: v });
+
+    // Actualizar movimiento
+    v += a * dt * 20; // escala visual
+    x += v * dt * 5;
+
+    // detener si llega al borde
+    if (x > canvas.width - 50) return;
+
+    animacion = requestAnimationFrame(() => draw(t + dt));
+  }
+
+  draw(0);
+}
+
+function reiniciar() {
+  cancelarAnimacion();
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('resultados').innerHTML = '';
+}
+
+function cancelarAnimacion() {
+  if (animacion) {
+    cancelAnimationFrame(animacion);
+    animacion = null;
+  }
+}
+</script>
+</body>
+</html>

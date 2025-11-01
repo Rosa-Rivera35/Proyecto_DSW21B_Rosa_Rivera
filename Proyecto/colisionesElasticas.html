@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Simulador de Colisiones Elásticas</title>
+<style>
+  body { font-family: Arial; background: #f4f4f4; margin: 0; padding: 0; text-align: center; }
+  h1 { background: #2c3e50; color: white; padding: 10px; }
+  #canvas { background: white; border: 2px solid #333; margin-top: 20px; }
+  .inputs { margin: 20px; }
+  label { margin: 5px; }
+  button { padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+  button:hover { background: #2980b9; }
+  .data { margin-top: 20px; background: #fff; display: inline-block; padding: 10px; border-radius: 10px; }
+</style>
+</head>
+<body>
+<h1>Simulador de Colisiones Elásticas</h1>
+
+<div class="inputs">
+  <label>m1 (kg): <input type="number" id="m1" value="0.2" step="0.1"></label>
+  <label>v1 inicial (m/s): <input type="number" id="v1i" value="1" step="0.1"></label>
+  <label>m2 (kg): <input type="number" id="m2" value="0.3" step="0.1"></label>
+  <label>v2 inicial (m/s): <input type="number" id="v2i" value="0" step="0.1"></label>
+  <button onclick="simular()">Simular</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+</div>
+
+<canvas id="canvas" width="600" height="200"></canvas>
+
+<div class="data" id="resultados"></div>
+
+<script>
+let animacionActiva = null; // para controlar la animación en curso
+
+function simular() {
+  cancelarAnimacion(); // detener cualquier simulación previa
+
+  const m1 = parseFloat(document.getElementById('m1').value);
+  const v1i = parseFloat(document.getElementById('v1i').value);
+  const m2 = parseFloat(document.getElementById('m2').value);
+  const v2i = parseFloat(document.getElementById('v2i').value);
+
+  // Fórmulas de colisión elástica 1D
+  const v1f = ((m1 - m2) * v1i + 2 * m2 * v2i) / (m1 + m2);
+  const v2f = ((m2 - m1) * v2i + 2 * m1 * v1i) / (m1 + m2);
+
+  // Mostrar resultados
+  document.getElementById('resultados').innerHTML = `
+    <h3>Resultados:</h3>
+    v₁ final = ${v1f.toFixed(2)} m/s<br>
+    v₂ final = ${v2f.toFixed(2)} m/s<br>
+    <b>Conservación del momento:</b><br>
+    Antes = ${(m1*v1i + m2*v2i).toFixed(2)} kg·m/s<br>
+    Después = ${(m1*v1f + m2*v2f).toFixed(2)} kg·m/s
+  `;
+
+  // Dibujar animación
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let x1 = 100, x2 = 400;
+  const r1 = 20 + m1*10, r2 = 20 + m2*10;
+  let v1 = v1i * 5; // escala visual
+  let v2 = v2i * 5;
+  let colision = false;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.arc(x1, 100, r1, 0, 2*Math.PI);
+    ctx.fillStyle = '#e74c3c';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x2, 100, r2, 0, 2*Math.PI);
+    ctx.fillStyle = '#2ecc71';
+    ctx.fill();
+
+    const distancia = (x2 - x1);
+    if (!colision && distancia <= r1 + r2) {
+      v1 = v1f * 5;
+      v2 = v2f * 5;
+      colision = true;
+    }
+
+    x1 += v1;
+    x2 += v2;
+
+    if (x1 < -50 || x2 > canvas.width + 50) return;
+    animacionActiva = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function reiniciar() {
+  cancelarAnimacion(); // detener animación
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('resultados').innerHTML = '';
+}
+
+function cancelarAnimacion() {
+  if (animacionActiva) {
+    cancelAnimationFrame(animacionActiva);
+    animacionActiva = null;
+  }
+}
+</script>
+</body>
+</html>
