@@ -1,104 +1,434 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Simulador de Movimiento Newtoniano</title>
-<style>
-  body { font-family: Arial; background: #eef2f3; margin: 0; padding: 0; text-align: center; }
-  h1 { background: #2c3e50; color: white; padding: 10px; }
-  #canvas { background: white; border: 2px solid #333; margin-top: 20px; }
-  .inputs { margin: 20px; }
-  label { margin: 5px; }
-  button { padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
-  button:hover { background: #2980b9; }
-  .data { margin-top: 20px; background: #fff; display: inline-block; padding: 10px; border-radius: 10px; width: 300px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación m₁ y m₂ con polea</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .panel {
+      max-width: 700px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .card {
+      flex: 1;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0077c2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    canvas {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: block;
+      margin: 30px auto;
+    }
+    .cronometro {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .leyenda {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .leyenda span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .color-box {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+  </style>
 </head>
 <body>
-<h1>Simulador de Movimiento Newtoniano</h1>
+  <h2 style="text-align:center;">🧠 Simulación m₁ y m₂ con polea</h2>
 
-<div class="inputs">
-  <label>Masa (kg): <input type="number" id="masa" value="2" step="0.1"></label>
-  <label>Fuerza (N): <input type="number" id="fuerza" value="4" step="0.1"></label>
-  <button onclick="simular()">Simular</button>
-  <button onclick="reiniciar()">Reiniciar</button>
-</div>
+  <div class="panel">
+    <div class="card">
+      <h3>Parámetros</h3>
+      <label>Masa m₁ (kg): <input type="number" id="m1" value="0.1"></label>
+      <label>Masa m₂ (kg): <input type="number" id="m2" value="0.1"></label>
+      <label>Gravedad (m/s²): <input type="number" id="g" value="9.8"></label>
+      <label>Fricción:
+        <select id="friccion">
+          <option value="0">Sin fricción</option>
+          <option value="0.2">Fricción</option>
+          <option value="0.4">Resistencia a la rodadura</option>
+        </select>
+      </label>
+      <label>Modo:
+        <select id="modo">
+          <option value="ley2">Ley 2 (F = m·a)</option>
+          <option value="ley1">Ley 1 (Equilibrio)</option>
+          <option value="ley3">Ley 3 (Acción - Reacción)</option>
+        </select>
+      </label>
+      <label>Fuerza externa F (N): <input type="number" id="fuerzaExt" value="0" step="0.1"></label>
+      <button onclick="iniciarCompleta()">▶ Simulación completa</button>
+      <button onclick="avanzarPaso()">⏩ Avanzar por cm</button>
+      <button onclick="reiniciar()">🔄 Reiniciar</button>
+    </div>
 
-<canvas id="canvas" width="600" height="200"></canvas>
+    <div class="card">
+      <h3>Resultados</h3>
+      <div id="resultados">
+        <p>Fuerza: <span id="fuerza">–</span> N</p>
+        <p>Aceleración: <span id="aceleracion">–</span> m/s²</p>
+        <p>Velocidad: <span id="velocidad">–</span> m/s</p>
+        <p>Distancia: <span id="distancia">–</span> m</p>
+        <p>Tensión: <span id="tension">–</span> N</p>
+        <p class="cronometro">⏱️ <span id="cronometro">00.00 s</span></p>
+      </div>
+      <div class="leyenda">
+        <span><div class="color-box" style="background:green;"></div> Sin fricción</span>
+        <span><div class="color-box" style="background:orange;"></div> Fricción</span>
+        <span><div class="color-box" style="background:red;"></div> Rodadura</span>
+      </div>
+    </div>
+  </div>
 
-<div class="data" id="resultados"></div>
+  <canvas id="simulador" width="700" height="300"></canvas>
 
-<script>
-let animacion = null;
-let datos = [];
+  <script>
+    const canvas = document.getElementById('simulador');
+    const ctx = canvas.getContext('2d');
+  const cronometro = document.getElementById('cronometro');
+  const fuerzaSpan = document.getElementById('fuerza');
+  const aceleracionSpan = document.getElementById('aceleracion');
+  const velocidadSpan = document.getElementById('velocidad');
+  const distanciaSpan = document.getElementById('distancia');
+  const tensionSpan = document.getElementById('tension');
+  const modoSelect = document.getElementById('modo');
+  const fuerzaExtInput = document.getElementById('fuerzaExt');
 
-function simular() {
-  cancelarAnimacion();
+  // Eventos para actualizar cálculos cuando cambien los valores
+  document.getElementById('m1').addEventListener('input', actualizarCalculos);
+  document.getElementById('m2').addEventListener('input', actualizarCalculos);
+  document.getElementById('g').addEventListener('input', actualizarCalculos);
+  document.getElementById('friccion').addEventListener('change', actualizarCalculos);
+  modoSelect.addEventListener('change', actualizarCalculos);
+  fuerzaExtInput.addEventListener('input', actualizarCalculos);
 
-  const m = parseFloat(document.getElementById('masa').value);
-  const F = parseFloat(document.getElementById('fuerza').value);
-  const a = F / m; // Segunda ley de Newton
+  // Escala: la regla en pantalla va de x=50 a x=350 => 300 px = 1 m
+  const scalePxPerMeter = 300; // 300 píxeles == 1 metro
+  const baseX = 100; // x inicial en px para m1 (corresponde a posM1 = 0 m)
+  // Posición de la polea en píxeles (coincide con el dibujo)
+  const pulleyX = 350;
+  const pulleyY = 150;
+  // baseY para m2 corresponde a la parte inferior de la polea (masa cuelga por debajo)
+  const baseY = pulleyY + 12;  // y inicial en px para m2 (posM2 = 0 m)
+    const maxPosM1 = 1.0; // límite en metros para la demostración
+    const maxPosM2 = 1.0;
 
-  document.getElementById('resultados').innerHTML = `
-    <h3>Resultados:</h3>
-    Fuerza = ${F.toFixed(2)} N<br>
-    Masa = ${m.toFixed(2)} kg<br>
-    Aceleración = <b>${a.toFixed(2)} m/s²</b><br>
-  `;
+    // Estado en unidades físicas (metros, m/s)
+    let posM1 = 0; // metros desde la posición base
+    let posM2 = 0; // metros desde la posición base (hacia abajo)
+    let velocidad = 0; // m/s (positiva = m1 a la derecha, m2 hacia abajo)
+    let tiempo = 0;
 
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
+    let m1 = parseFloat(document.getElementById('m1').value) || 0.1;
+    let m2 = parseFloat(document.getElementById('m2').value) || 0.1;
+    let g = parseFloat(document.getElementById('g').value) || 9.8;
+    let fr = parseFloat(document.getElementById('friccion').value) || 0;
+    let a = 0;
+    let Fnet = 0;
 
-  let x = 50;  // posición inicial
-  let v = 0;   // velocidad inicial
-  const dt = 0.05; // intervalo de tiempo
-  datos = [];
+  let animando = false;
+    let lastTimestamp = null;
+  let tension = 0;
+  let fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
 
-  function draw(t) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function iniciarCompleta() {
+      reiniciar();
+      animando = true;
+      lastTimestamp = null;
+      requestAnimationFrame(animar);
+    }
 
-    // Dibujar bloque
-    ctx.fillStyle = "#e67e22";
-    ctx.fillRect(x, 130, 40, 40);
+    function avanzarPaso() {
+      // Avanza 1 cm = 0.01 m en la dirección actual de la aceleración
+      if (!animando) {
+        actualizarCalculos();
+        const paso = 0.01; // metros
+        // Avanzar según signo de la aceleración (si a == 0, no avanza)
+        if (Math.abs(a) > 1e-6) {
+          velocidad += a * 0.1; // pequeño impulso
+          posM1 += Math.sign(a) * paso;
+          posM2 += Math.sign(a) * paso;
+          tiempo += 0.1;
+        }
+        actualizarDisplays();
+        dibujarEscena();
+      }
+    }
 
-    // Dibujar piso
-    ctx.beginPath();
-    ctx.moveTo(0, 170);
-    ctx.lineTo(canvas.width, 170);
-    ctx.strokeStyle = "#333";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    function reiniciar() {
+      posM1 = 0;
+      posM2 = 0;
+      velocidad = 0;
+      tiempo = 0;
+      animando = false;
+      lastTimestamp = null;
+      cronometro.textContent = "00.00 s";
 
-    // Guardar datos para gráficas
-    datos.push({ tiempo: t, posicion: x, velocidad: v });
+      // Actualizar cálculos con los valores actuales
+      actualizarCalculos();
 
-    // Actualizar movimiento
-    v += a * dt * 20; // escala visual
-    x += v * dt * 5;
+      // Resetear displays
+      velocidadSpan.textContent = "0.00";
+      distanciaSpan.textContent = "0.00";
 
-    // detener si llega al borde
-    if (x > canvas.width - 50) return;
+      dibujarEscena();
+    }
 
-    animacion = requestAnimationFrame(() => draw(t + dt));
-  }
+    function actualizarCalculos() {
+      m1 = parseFloat(document.getElementById('m1').value) || 0;
+      m2 = parseFloat(document.getElementById('m2').value) || 0;
+      g = parseFloat(document.getElementById('g').value) || 9.8;
+      fr = parseFloat(document.getElementById('friccion').value) || 0;
 
-  draw(0);
-}
+      // Fuerzas (convención: positivo = m2 hacia abajo / m1 hacia la derecha)
+      const peso2 = m2 * g; // fuerza hacia abajo que tiende a mover el sistema en positivo
 
-function reiniciar() {
-  cancelarAnimacion();
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  document.getElementById('resultados').innerHTML = '';
-}
+      // La fricción siempre se opone al movimiento.
+      // Si hay velocidad, la fricción tiene signo opuesto a la velocidad.
+      // Si no hay velocidad, asumimos que la fricción se opone a la fuerza neta potencial (peso2 + fuerzaExt).
+      let sentidoFriccion = 0;
+      if (Math.abs(velocidad) > 1e-6) {
+        sentidoFriccion = -Math.sign(velocidad); // fricción se opone a la velocidad
+      } else {
+        // si no hay movimiento, fricción se opone a la tendencia (peso2 + fuerzaExt)
+        const tendencia = peso2 + (parseFloat(fuerzaExtInput.value) || 0);
+        sentidoFriccion = tendencia === 0 ? 0 : -Math.sign(tendencia);
+      }
 
-function cancelarAnimacion() {
-  if (animacion) {
-    cancelAnimationFrame(animacion);
-    animacion = null;
-  }
-}
-</script>
+      const friccionMagnitud = fr * m1 * g; // magnitud de la fricción
+      const friccion = friccionMagnitud * sentidoFriccion; // con signo
+
+      // Fuerza externa (en la caja horizontal, positiva a la derecha)
+      fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
+
+      // Modo seleccionado
+      const modo = modoSelect.value;
+
+      if (modo === 'ley1') {
+        // Ley 1 - equilibrio: la aceleración se fuerza a 0.
+        // Calculamos qué fuerza externa sería necesaria para que a = 0:
+        // 0 = (peso2 + fuerzaExt_req + friccion) / (m1 + m2) => fuerzaExt_req = -(peso2 + friccion)
+        const fuerzaExtReq = -(peso2 + friccion);
+        a = 0;
+        Fnet = 0;
+        tension = peso2; // en equilibrio, tension iguala el peso si sistema está estático sin otros efectos
+        // mostrar la fuerza necesaria (si el usuario quiere aplicarla puede introducirla)
+        fuerzaSpan.textContent = fuerzaExtReq.toFixed(2) + ' (F ext requerida)';
+      } else {
+        // Ley 2 y Ley 3: dinámica con F = m·a (Ley 2). Ley 3 muestra pares acción-reacción pero usa la misma dinámica.
+        // Fuerza neta en la dirección positiva (m2 hacia abajo es positiva)
+        Fnet = peso2 + fuerzaExt + friccion; // fuerzaExt positiva a la derecha suma al movimiento positivo
+        a = (m1 + m2) > 0 ? Fnet / (m1 + m2) : 0;
+      }
+
+      // Calcular tensión (asumiendo cuerda ideal): a partir de m2: m2*g - T = m2*a => T = m2*g - m2*a
+      tension = m2 * g - m2 * a;
+
+      // Actualizar displays básicos (fuerza neta y aceleración)
+      if (modo !== 'ley1') fuerzaSpan.textContent = Fnet.toFixed(2);
+      aceleracionSpan.textContent = a.toFixed(2);
+      tensionSpan.textContent = tension.toFixed(2);
+    }
+
+    function actualizarDisplays() {
+      velocidadSpan.textContent = velocidad.toFixed(2);
+      const distanciaRecorrida = posM1; // en metros
+      distanciaSpan.textContent = distanciaRecorrida.toFixed(2);
+      cronometro.textContent = tiempo.toFixed(2) + " s";
+    }
+
+    function animar(timestamp) {
+      if (!animando) return;
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000); // limitar dt para estabilidad
+      lastTimestamp = timestamp;
+
+      // Actualizar cálculos con el estado actual
+      actualizarCalculos();
+
+      // Integración simple
+      velocidad += a * dt; // m/s
+      posM1 += velocidad * dt; // m
+      posM2 += velocidad * dt; // m (mismo desplazamiento en la cuerda)
+      tiempo += dt;
+
+      // Limitar posiciones dentro de la regla (0 .. maxPos)
+      if (posM1 < 0) {
+        posM1 = 0;
+        velocidad = 0;
+      }
+      if (posM1 > maxPosM1) {
+        posM1 = maxPosM1;
+        velocidad = 0;
+        animando = false;
+      }
+      if (posM2 < 0) posM2 = 0;
+      if (posM2 > maxPosM2) {
+        posM2 = maxPosM2;
+        velocidad = 0;
+        animando = false;
+      }
+
+      actualizarDisplays();
+      dibujarEscena();
+
+      if (animando) requestAnimationFrame(animar);
+      else cronometro.textContent = "Finalizado";
+    }
+
+    function dibujarEscena() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Regla (marcas cada 0.1 m)
+      ctx.fillStyle = '#b2f2d6';
+      ctx.fillRect(50, 140, 300, 30);
+      ctx.fillStyle = '#000';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i <= 10; i++) {
+        const x = 50 + (i * (300 / 10));
+        ctx.beginPath();
+        ctx.moveTo(x, 170);
+        ctx.lineTo(x, 175);
+        ctx.stroke();
+        ctx.fillText((i / 10).toFixed(1), x - 6, 155);
+      }
+
+  // Mesa
+  ctx.fillStyle = "#dcedc8";
+  ctx.fillRect(50, 150, 300, 20);
+
+  // Polea
+  ctx.beginPath();
+  ctx.arc(pulleyX, pulleyY, 10, 0, Math.PI * 2);
+  ctx.fillStyle = "#555";
+  ctx.fill();
+
+  // Posiciones en píxeles
+  const x1 = baseX + posM1 * scalePxPerMeter; // px (m1 sobre la mesa)
+  const y2 = baseY + posM2 * scalePxPerMeter; // px (m2 colgando por debajo de la polea)
+
+  // Cuerda
+  ctx.strokeStyle = "#333";
+  ctx.beginPath();
+  ctx.moveTo(x1 + 25, pulleyY);
+  ctx.lineTo(pulleyX, pulleyY);
+  ctx.lineTo(pulleyX, y2);
+  ctx.stroke();
+
+      // m₁ (horizontal)
+      ctx.fillStyle = "#2196f3";
+      ctx.fillRect(x1, 130, 50, 20);
+      ctx.fillStyle = "#fff";
+      ctx.fillText("m₁", x1 + 20, 145);
+
+      // m₂ (vertical)
+      ctx.fillStyle = "#e53935";
+      ctx.fillRect(340, y2, 20, 20);
+      ctx.fillStyle = "#fff";
+      ctx.fillText("m₂", 343, y2 + 15);
+
+      // Flechas de fuerzas (indicativas)
+  // Peso m₂
+  ctx.strokeStyle = "red";
+  ctx.beginPath();
+  ctx.moveTo(pulleyX, y2 + 20);
+  ctx.lineTo(pulleyX, y2 + 50);
+  ctx.stroke();
+
+  // Tensión en la cuerda (en ambos bloques): dibujar flechas proporcionales
+  const tensionVis = Math.min(60, Math.abs(tension) * 20); // escala visual
+  ctx.strokeStyle = "green";
+  ctx.fillStyle = "green";
+  // en m2: tensión hacia arriba
+  ctx.beginPath();
+  ctx.moveTo(pulleyX, y2);
+  ctx.lineTo(pulleyX, y2 - tensionVis);
+  ctx.stroke();
+  // cabeza de flecha
+  ctx.beginPath();
+  ctx.moveTo(pulleyX, y2 - tensionVis);
+  ctx.lineTo(pulleyX - 5, y2 - tensionVis + 6);
+  ctx.lineTo(pulleyX + 5, y2 - tensionVis + 6);
+  ctx.fill();
+  // etiqueta
+  ctx.fillStyle = '#000';
+  ctx.fillText('T=' + tension.toFixed(2) + 'N', pulleyX + 10, y2 - tensionVis / 2);
+
+  // en m1: tensión hacia la izquierda (en el bloque horizontal tira hacia la polea)
+  const arrowXStart = x1 + 25; // punto en el bloque
+  ctx.strokeStyle = "green";
+  ctx.beginPath();
+  ctx.moveTo(arrowXStart, 140);
+  ctx.lineTo(arrowXStart - tensionVis, 140);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(arrowXStart - tensionVis, 140);
+  ctx.lineTo(arrowXStart - tensionVis + 6, 136);
+  ctx.lineTo(arrowXStart - tensionVis + 6, 144);
+  ctx.fillStyle = 'green';
+  ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.fillText('T', arrowXStart - tensionVis - 12, 135);
+
+      // Fricción (si hay)
+      if (fr > 0) {
+        ctx.strokeStyle = "orange";
+        ctx.beginPath();
+        // dibujar fricción en la cara del bloque opuesta al movimiento
+        const fx = velocidad >= 0 ? x1 + 50 : x1 - 30;
+        ctx.moveTo(fx, 140);
+        ctx.lineTo(fx + (velocidad >= 0 ? 30 : -30), 140);
+        ctx.stroke();
+      }
+    }
+    // Iniciar displays y escena
+    actualizarCalculos();
+    dibujarEscena();
+  </script>
 </body>
 </html>
