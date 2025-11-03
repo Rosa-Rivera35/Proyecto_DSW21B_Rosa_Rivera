@@ -1,127 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Simuladores de Física ⚛️</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f4f7f6;
+    }
 
-/* Style the header */
-header {
-  background-color: #ffffff;
-  padding: 30px;
-  text-align: center;
-  font-size: 35px;
-  color: rgb(23, 3, 139);
-}
+    header {
+      background-color: #ffffff;
+      padding: 30px;
+      text-align: center;
+      font-size: 35px;
+      color: rgb(23, 3, 139);
+      margin-bottom: 30px;
+    }
 
-/* Create two columns/boxes that floats next to each other */
-nav {
-  float: left;
-  width: 27%;
-  height: 300px; /* only for demonstration, should be removed */
-  background: #cfe5ee;
-  padding: 20px;
-  font-size: 20px;
-}
+    header a {
+      text-decoration: none;
+      color: rgb(23, 3, 139);
+      font-weight: bold;
+    }
 
-/* Style the list inside the menu */
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
+    header p {
+      font-size: 18px;
+      color: #555;
+    }
 
-article {
-  float: left;
-  padding: 20px;
-  width: 70%;
-  background-color: #f1f1f1;
-  height: 300px; /* only for demonstration, should be removed */
-}
+    section {
+      margin-bottom: 50px;
+    }
 
-/* Clear floats after the columns */
-section::after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    .container {
+      margin-top: 30px;
+    }
 
-/* Style the footer */
-footer {
-  background-color: #7edfe6cc;
-  padding: 10px;
-  text-align: center;
-  color: rgb(59, 59, 59);
-}
+    /* Adjusting the layout for responsive design */
+    .simulador-card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
 
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 600px) {
-  nav, article {
-    width: 100%;
-    height: auto;
-  }
-}
-</style>
+    .simulador-card h4 {
+      text-align: center;
+      color: rgb(23, 3, 139);
+    }
+
+    .simulador-card ul {
+      padding-left: 20px;
+      font-size: 16px;
+    }
+
+    footer {
+      background-color: #7edfe6cc;
+      padding: 10px;
+      text-align: center;
+      color: rgb(59, 59, 59);
+      margin-top: 50px;
+    }
+
+    /* Responsive layout - makes the columns stack on top of each other for smaller screens */
+    @media (max-width: 600px) {
+      nav, article {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
 
 </head>
 <body>
 
-<div class="jumbotron text-center">
-  <header><h1>Simuladores de Fisica.</h1>
-  <a href="colaboradores.html">Conocenos</a>
-  <p>Resize this responsive page to see the effect!</p> 
-</header>
+<div class="container text-center">
+  <header>
+    <h1>Simuladores de Física ⚛️</h1>
+    <a href="colaboradores.html">Conócenos</a>
+    <p>Simuladores educativos para el aprendizaje de la Física.</p>
+  </header>
 </div>
 
-<section>
-  <nav>
+<section class="container">
+  <article class="simulador-card">
+    <h4>Simulador de Movimiento Newtoniano</h4>
     <ul>
-        <li>Simuladores en linea:</li>
+      <li>Primera Ley de Newton (Inercia).</li>
+      <li>Segunda Ley de Newton (F=m*a).</li>
+      <li>Tercera Ley de Newton (Acción y Reacción).</li>
     </ul>
-    <ol>
-      <li><a href="movimientoNewtoniano.html">Movimiento Newtoniano.</a></li>
-      <br>
-      <li><a href="colisionesElasticas.html">Colisiones Elásticas.</a></li>
-    </ol>
-  </nav>
-  
-  <article>
-    <h1 style="text-align: center;">TEX</h1>
-    <p>tex</p>
-    <p>tex</p>
+  </article>
+
+  <article class="simulador-card">
+    <h4>Simulador de Colisiones Elásticas</h4>
+    <ul>
+      <li>Conservación del momento lineal: m1*v1 + m2*v2 = m1*v1' + m2*v2'.</li>
+      <li>Conservación de la energía cinética en colisiones elásticas.</li>
+    </ul>
   </article>
 </section>
 
-<div class="container">
+<section class="container">
   <div class="row">
-    <div class="col-sm-4">
-      <h3>Column 1</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+    <div class="col-sm-6">
+      <div class="simulador-card">
+        <h4><a href="movimientoNewtoniano.html">Movimiento Newtoniano</a></h4>
+      </div>
     </div>
-    <div class="col-sm-4">
-      <h3>Column 2</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Column 3</h3>        
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+    <div class="col-sm-6">
+      <div class="simulador-card">
+        <h4><a href="colisionesElasticas.html">Colisiones Elásticas</a></h4>
+      </div>
     </div>
   </div>
-</div>
+</section>
+
+<footer>
+  <div class="max-w-7xl mx-auto p-4 text-center text-sm text-gray-500">© <span id="year"></span> M3 — Rosa Rivera</div>
+</footer>
+
+<script>
+  // This script will automatically fill in the current year in the footer
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
