@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación Ley de Newton (F = m·a)</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .panel {
+      max-width: 700px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .card {
+      flex: 1;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0077c2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    canvas {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: block;
+      margin: 30px auto;
+    }
+    .cronometro {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Simulador Ley de Newton (F = m·a)</h2>
+
+  <div class="panel">
+    <div class="card">
+      <h3>Parámetros</h3>
+      <label>Masa m₁ (kg): <input type="number" id="m1" value="0.1"></label>
+      <label>Masa m₂ (kg): <input type="number" id="m2" value="0.1"></label>
+      <label>Gravedad (m/s²): <input type="number" id="g" value="9.8"></label>
+      <label>Fricción:
+        <select id="friccion">
+          <option value="0">Sin fricción</option>
+          <option value="0.2">Fricción</option>
+          <option value="0.4">Resistencia a la rodadura</option>
+        </select>
+      </label>
+      <label>Fuerza externa F (N): <input type="number" id="fuerzaExt" value="0" step="0.1"></label>
+      <button onclick="iniciarCompleta()">▶ Simulación completa</button>
+      <button onclick="avanzarPaso()">⏩ Avanzar por cm</button>
+      <button onclick="reiniciar()">🔄 Reiniciar</button>
+    </div>
+
+    <div class="card">
+      <h3>Resultados</h3>
+      <div id="resultados">
+        <p>Fuerza: <span id="fuerza">–</span> N</p>
+        <p>Aceleración: <span id="aceleracion">–</span> m/s²</p>
+        <p>Velocidad: <span id="velocidad">–</span> m/s</p>
+        <p>Distancia: <span id="distancia">–</span> m</p>
+        <p>Tensión: <span id="tension">–</span> N</p>
+        <p class="cronometro">⏱️ <span id="cronometro">00.00 s</span></p>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="simulador" width="700" height="300"></canvas>
+
+  <script>
+    const canvas = document.getElementById('simulador');
+    const ctx = canvas.getContext('2d');
+    const cronometro = document.getElementById('cronometro');
+    const fuerzaSpan = document.getElementById('fuerza');
+    const aceleracionSpan = document.getElementById('aceleracion');
+    const velocidadSpan = document.getElementById('velocidad');
+    const distanciaSpan = document.getElementById('distancia');
+    const tensionSpan = document.getElementById('tension');
+    const fuerzaExtInput = document.getElementById('fuerzaExt');
+    const friccionSelect = document.getElementById('friccion');
+
+    let m1 = parseFloat(document.getElementById('m1').value) || 0.1;
+    let m2 = parseFloat(document.getElementById('m2').value) || 0.1;
+    let g = parseFloat(document.getElementById('g').value) || 9.8;
+    let fr = parseFloat(friccionSelect.value) || 0;
+    let fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
+    let a = 0;
+    let Fnet = 0;
+    let posM1 = 0, posM2 = 0, velocidad = 0, tiempo = 0;
+    let animando = false;
+    let lastTimestamp = null;
+    let tension = 0;
+
+    // Eventos para actualizar cálculos cuando cambian los valores
+    document.getElementById('m1').addEventListener('input', actualizarCalculos);
+    document.getElementById('m2').addEventListener('input', actualizarCalculos);
+    document.getElementById('g').addEventListener('input', actualizarCalculos);
+    friccionSelect.addEventListener('change', actualizarCalculos);
+    fuerzaExtInput.addEventListener('input', actualizarCalculos);
+
+    // Función para iniciar la simulación completa
+    function iniciarCompleta() {
+      reiniciar();
+      animando = true;
+      lastTimestamp = null;
+      requestAnimationFrame(animar);
+    }
+
+    // Función para avanzar un paso
+    function avanzarPaso() {
+      if (!animando) {
+        actualizarCalculos();
+        const paso = 0.01; // metros
+        if (Math.abs(a) > 1e-6) {
+          velocidad += a * 0.1;
+          posM1 += Math.sign(a) * paso;
+          posM2 += Math.sign(a) * paso;
+          tiempo += 0.1;
+        }
+        actualizarDisplays();
+        dibujarEscena();
+      }
+    }
+
+    // Función para reiniciar los valores
+    function reiniciar() {
+      posM1 = 0;
+      posM2 = 0;
+      velocidad = 0;
+      tiempo = 0;
+      animando = false;
+      lastTimestamp = null;
+      cronometro.textContent = "00.00 s";
+      actualizarCalculos();
+      dibujarEscena();
+    }
+
+    // Función para actualizar los cálculos
+    function actualizarCalculos() {
+      m1 = parseFloat(document.getElementById('m1').value) || 0;
+      m2 = parseFloat(document.getElementById('m2').value) || 0;
+      g = parseFloat(document.getElementById('g').value) || 9.8;
+      fr = parseFloat(friccionSelect.value) || 0;
+
+      const peso2 = m2 * g;
+      const friccionMagnitud = fr * m1 * g;
+      const friccion = friccionMagnitud * -Math.sign(fuerzaExt + peso2);
+
+      // Fuerza neta (F = m·a)
+      Fnet = peso2 + fuerzaExt + friccion;
+      a = (m1 + m2) > 0 ? Fnet / (m1 + m2) : 0;
+
+      // Calcular la tensión en la cuerda
+      tension = m2 * g - m2 * a;
+
+      // Actualizar los resultados en la interfaz
+      fuerzaSpan.textContent = Fnet.toFixed(2);
+      aceleracionSpan.textContent = a.toFixed(2);
+      tensionSpan.textContent = tension.toFixed(2);
+    }
+
+    // Función para actualizar los displays (resultados)
+    function actualizarDisplays() {
+      velocidadSpan.textContent = velocidad.toFixed(2);
+      const distanciaRecorrida = posM1; // en metros
+      distanciaSpan.textContent = distanciaRecorrida.toFixed(2);
+      cronometro.textContent = tiempo.toFixed(2) + " s";
+    }
+
+    // Función para animar la simulación
+    function animar(timestamp) {
+      if (!animando) return;
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
+      lastTimestamp = timestamp;
+
+      actualizarCalculos();
+
+      // Integración simple para el movimiento
+      velocidad += a * dt;
+      posM1 += velocidad * dt;
+      posM2 += velocidad * dt;
+      tiempo += dt;
+
+      // Limitar las posiciones para evitar que salgan de la pantalla
+      const maxPosM1 = 1.0;
+      const maxPosM2 = 1.0;
+
+      if (posM1 < 0) {
+        posM1 = 0;
+        velocidad = 0;
+      }
+      if (posM1 > maxPosM1) {
+        posM1 = maxPosM1;
+        velocidad = 0;
+        animando = false;
+      }
+      if (posM2 < 0) posM2 = 0;
+      if (posM2 > maxPosM2) {
+        posM2 = maxPosM2;
+        velocidad = 0;
+        animando = false;
+      }
+
+      actualizarDisplays();
+      dibujarEscena();
+
+      if (animando) requestAnimationFrame(animar);
+      else cronometro.textContent = "Finalizado";
+    }
+
+    // Función para dibujar la escena de la simulación
+    function dibujarEscena() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Regla
+      ctx.fillStyle = '#b2f2d6';
+      ctx.fillRect(50, 140, 300, 30);
+      ctx.fillStyle = '#000';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i <= 10; i++) {
+        const x = 50 + (i * (300 / 10));
+        ctx.beginPath();
+        ctx.moveTo(x, 170);
+        ctx.lineTo(x, 175);
+        ctx.stroke();
+        ctx.fillText((i / 10).toFixed(1), x - 6, 155);
+      }
+
+      // Mesa
+      ctx.fillStyle = "#dcedc8";
+      ctx.fillRect(50, 150, 300, 20);
+
+      // Polea
+      ctx.beginPath();
+      ctx.arc(350, 150, 10, 0, Math.PI * 2);
+      ctx.fillStyle = "#555";
+      ctx.fill();
+
+      // Posiciones en píxeles
+      const x1 = 100 + posM1 * 300; // m1
+      const y2 = 150 + posM2 * 300; // m2
+
+      // Dibujar las cuerdas y masas
+      ctx.strokeStyle = "#333";
+      ctx.beginPath();
+      ctx.moveTo(x1 + 25, 150);
+      ctx.lineTo(350, 150);
+      ctx.lineTo(350, y2);
+      ctx.stroke();
+
+      // Dibujar m₁
+      ctx.fillStyle = "#2196f3";
+      ctx.fillRect(x1, 130, 50, 20);
+      ctx.fillStyle = "#fff";
+      ctx.fillText("m₁", x1 + 20, 145);
+
+      // Dibujar m₂
+      ctx.fillStyle = "#e53935";
+      ctx.fillRect(340, y2, 20, 20);
+      ctx.fillStyle = "#fff";
+      ctx.fillText("m₂", 343, y2 + 15);
+
+      // Dibujar la fuerza de tensión
+      const tensionVis = Math.min(60, Math.abs(tension) * 20);
+      ctx.strokeStyle = "green";
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.moveTo(350, y2);
+      ctx.lineTo(350, y2 - tensionVis);
+      ctx.stroke();
+
+      // Etiqueta de la tensión
+      ctx.fillStyle = '#000';
+      ctx.fillText('T=' + tension.toFixed(2) + 'N', 360, y2 - tensionVis / 2);
+    }
+
+    // Inicializar la simulación
+    actualizarCalculos();
+    dibujarEscena();
+  </script>
+</body>
+</html>
