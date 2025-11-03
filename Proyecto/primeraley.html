@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación Ley 1 de Newton - Tensiones</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 10px;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .card {
+      flex: 1 1 300px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-width: 280px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      text-align: center;
+      color: #0077c2;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0077c2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #005b99;
+    }
+
+    .canvas-container {
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      margin-top: 20px;
+      padding: 10px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 1.4em;
+      }
+      button {
+        font-size: 0.9em;
+      }
+      input {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>🧠 Simulación Ley 1 de Newton - Tensiones</h2>
+
+  <div class="panel">
+    <div class="card">
+      <h3>Parámetros</h3>
+      <label>Masa (kg): <input type="number" id="masa" value="8" step="0.1"></label>
+      <label>Gravedad (m/s²): <input type="number" id="gravedad" value="9.8" step="0.1"></label>
+      <label>Ángulo θ₁ (°): <input type="number" id="angulo1" value="60" step="1"></label>
+      <label>Ángulo θ₂ (°): <input type="number" id="angulo2" value="30" step="1"></label>
+      <button onclick="calcularTensiones()">Calcular Tensiones</button>
+      <button onclick="reiniciarSimulacion()">Reiniciar Simulación</button>
+    </div>
+
+    <div class="card">
+      <h3>Resultados</h3>
+      <p><strong>Peso:</strong> <span id="peso">–</span> N</p>
+      <p><strong>Tensión T₁:</strong> <span id="tension1">–</span> N</p>
+      <p><strong>Tensión T₂:</strong> <span id="tension2">–</span> N</p>
+    </div>
+  </div>
+
+  <div class="canvas-container">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script>
+    const pesoSpan = document.getElementById('peso');
+    const tension1Span = document.getElementById('tension1');
+    const tension2Span = document.getElementById('tension2');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Ajustar tamaño del canvas según el contenedor
+    function resizeCanvas() {
+      canvas.width = canvas.clientWidth;
+      canvas.height = 400;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function calcularTensiones() {
+      const m = parseFloat(document.getElementById('masa').value);
+      const g = parseFloat(document.getElementById('gravedad').value);
+      const theta1 = parseFloat(document.getElementById('angulo1').value) * Math.PI / 180;
+      const theta2 = parseFloat(document.getElementById('angulo2').value) * Math.PI / 180;
+
+      const peso = m * g;
+      pesoSpan.textContent = peso.toFixed(2);
+
+      // Ecuaciones de equilibrio
+      const T2 = peso / (Math.sin(theta1) + (Math.cos(theta1) / Math.cos(theta2)) * Math.sin(theta2));
+      const T1 = (T2 * Math.cos(theta2)) / Math.cos(theta1);
+
+      tension1Span.textContent = T1.toFixed(2);
+      tension2Span.textContent = T2.toFixed(2);
+
+      dibujarEscena(T1, T2, theta1, theta2, peso);
+    }
+
+    function reiniciarSimulacion() {
+      document.getElementById('masa').value = 8;
+      document.getElementById('gravedad').value = 9.8;
+      document.getElementById('angulo1').value = 60;
+      document.getElementById('angulo2').value = 30;
+
+      pesoSpan.textContent = "–";
+      tension1Span.textContent = "–";
+      tension2Span.textContent = "–";
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function dibujarEscena(T1, T2, theta1, theta2, peso) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2;
+      const cy = 250;
+      const longitud = 150;
+
+      // Coordenadas de las cuerdas hacia arriba
+      const x1 = cx - longitud * Math.cos(theta1);
+      const y1 = cy - longitud * Math.sin(theta1);
+      const x2 = cx + longitud * Math.cos(theta2);
+      const y2 = cy - longitud * Math.sin(theta2);
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#2196f3";
+      ctx.fillStyle = "black";
+      ctx.font = "16px Arial";
+
+      // Tensión 1
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(x1, y1);
+      ctx.stroke();
+      ctx.fillText("T1=" + T1.toFixed(1) + "N", x1 - 50, y1 - 10);
+
+      // Tensión 2
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.fillText("T2=" + T2.toFixed(1) + "N", x2 + 10, y2 - 10);
+
+      // Peso
+      ctx.strokeStyle = "red";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx, cy + longitud);
+      ctx.stroke();
+      ctx.fillText("Peso=" + peso.toFixed(1) + "N", cx + 10, cy + longitud / 2);
+
+      // Punto de unión
+      ctx.fillStyle = "#000";
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  </script>
+</body>
+</html>
