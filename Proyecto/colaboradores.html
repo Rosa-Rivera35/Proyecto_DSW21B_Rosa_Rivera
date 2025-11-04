@@ -17,20 +17,31 @@
     /* Pequeñas mejoras al estilo por encima de Tailwind */
     .card-photo { object-fit: cover; height: 200px; width: 100%; }
     @media (min-width: 1024px) { .card-photo { height: 240px; } }
+
+    /* Logo ITCA */
+    .logo {
+      height: 47px;  /* ≈ 1.25 cm */
+      width: auto;
+    }
+    
   </style>
 </head>
 
 <body class="bg-gray-50 text-gray-800">
   <header class="bg-white shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
+      <!-- Logo + título -->
+      <div class="flex items-center space-x-4">
+        <img src="img/image.png" alt="Logo ITCA-FEPADE" class="logo">
+        <div>
       <div>
         <h1 class="text-xl font-semibold">Equipo</h1>
-        <p class="text-sm text-gray-500">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>
+        <!--<p class="text-sm text-gray-500">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>-->
       </div>
       <nav class="text-sm text-gray-600">
         <a href="index.html" class="mr-4 hover:underline">Inicio</a>
-        <a href="#equipo" class="mr-4 hover:underline">Miembros</a>
-        <a href="#contacto" class="hover:underline">Contacto</a>
+        <!--<a href="#equipo" class="mr-4 hover:underline">Miembros</a>
+        <a href="#contacto" class="hover:underline">Contacto</a>-->
       </nav>
     </div>
   </header>
@@ -39,7 +50,7 @@
     <!-- Intro -->
     <section class="mb-8">
       <div class="bg-white p-6 rounded-2xl shadow-sm">
-        <h2 class="text-2xl font-bold">Nuestros colaboradores</h2>
+        <h2 class="text-2xl font-bold">Nuestras desarrolladoras.</h2>
         <p class="mt-2 text-gray-600">Esta página web ha sido elaborada por estudiantes de la Escuela Especializada en Ingeniería ITCA FEPADE, de la carrera Técnico en Ingeniería de Desarrollo de Software.</p>
         <p class="mt-2 text-gray-600">Forma parte del módulo “Descripción de Fenómenos Físicos Aplicados a la Computación”, guiado por el Ing. Fredy Enrique Granadeño Ramos.</p>
         <p class="mt-2 text-gray-600">El equipo está conformado por: Sindy Alicia Arias González, Nahomy Valentina Guardado Toloza, Thelma de los Ángeles Hernández Alvarado, Daeleny Yamidia Mendoza Chavez, Rosa Michelle Rivera Ibarra y Alison Azucena Salvador Hernández, pertenecientes al grupo DSW21-B.</p>

@@ -9,9 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -20,11 +18,21 @@
 
     header {
       background-color: #ffffff;
-      padding: 30px;
+      padding: 20px 30px;
       text-align: center;
       font-size: 29px;
       color: rgb(23, 3, 139);
       margin-bottom: 30px;
+      position: relative;
+    }
+
+    /* Logo ITCA FEPADE */
+    .logo {
+      position: absolute;
+      top: 15px;
+      left: 25px;
+      height: 47px; /* ≈ 1.25 cm */
+      width: auto;
     }
 
     header a {
@@ -46,7 +54,6 @@
       margin-top: 30px;
     }
 
-    /* Adjusting the layout for responsive design */
     .simulador-card {
       background: #fff;
       padding: 15px;
@@ -73,40 +80,53 @@
       margin-top: 50px;
     }
 
-    /* Responsive layout - makes the columns stack on top of each other for smaller screens */
     @media (max-width: 600px) {
       nav, article {
         width: 100%;
         height: auto;
       }
+      .logo {
+        position: static;
+        display: block;
+        margin: 0 auto 10px;
+      }
     }
   </style>
-
 </head>
 <body>
 
 <div class="container text-center">
   <header>
+    <img src="img/image.png" alt="Logo ITCA-FEPADE" class="logo">
     <h1>Simuladores de Física ⚛️</h1>
     <a href="colaboradores.html">Conócenos</a>
-    <p>Simuladores educativos para el aprendizaje de la Física.</p>
+    <p>Simuladores educativos para el aprendizaje de la Física!</p>
   </header>
 </div>
 
 <section class="container">
   <article class="simulador-card">
     <h4>Simulador de Movimiento Newtoniano</h4>
-    <ul>
+    <ol>
       <li>Primera Ley de Newton (Inercia).</li>
-      <li>Segunda Ley de Newton (F=m*a).</li>
+      <li>Segunda Ley de Newton (F = m·a).</li>
       <li>Tercera Ley de Newton (Acción y Reacción).</li>
-    </ul>
+    </ol>
   </article>
+
+  <section class="conteiner">
+    <div class="row"><div class="col-sm-6">
+      <div class="simulador-card">
+        <h4><a href="primeraley.html">Primera ley de Newton</a></h4>
+        <h4><a href="segundaley.html">Segunda ley de Newton</a></h4>
+      </div>
+    </div></div>
+  </section>
 
   <article class="simulador-card">
     <h4>Simulador de Colisiones Elásticas</h4>
     <ul>
-      <li>Conservación del momento lineal: m1*v1 + m2*v2 = m1*v1' + m2*v2'.</li>
+      <li>Conservación del momento lineal: m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'.</li>
       <li>Conservación de la energía cinética en colisiones elásticas.</li>
     </ul>
   </article>
@@ -116,12 +136,6 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="simulador-card">
-        <h4><a href="primeraley.html">Primera ley de Newton</a></h4>
-        <h4><a href="segundaley.html">Segunda ley de Newton</a></h4>
-      </div>
-    </div>
-    <div class="col-sm-6">
-      <div class="simulador-card">
         <h4><a href="colisionesElasticas.html">Colisiones Elásticas</a></h4>
       </div>
     </div>
@@ -129,11 +143,12 @@
 </section>
 
 <footer>
-  <div class="max-w-7xl mx-auto p-4 text-center text-sm text-gray-500">© <span id="year"></span> M3 — Rosa Rivera</div>
+  <div class="max-w-7xl mx-auto p-4 text-center text-sm text-gray-500">
+    © <span id="year"></span> M3 — Rosa Rivera
+  </div>
 </footer>
 
 <script>
-  // This script will automatically fill in the current year in the footer
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
