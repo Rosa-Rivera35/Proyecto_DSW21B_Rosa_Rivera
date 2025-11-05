@@ -5,25 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simulador de Colisiones (Elásticas e Inelásticas)</title>
 <style>
+  /* ======== ESTILOS GENERALES ======== */
   body {
     background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
   }
 
-  h2 {
+  /* ======== ENCABEZADO ======== */
+  header {
+    width: 100%;
+    background: #ffffffcc;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header img {
+    height: 47px; /* ≈1.25 cm */
+    width: auto;
+    margin-right: 15px;
+  }
+
+  header h2 {
     color: #003366;
-    text-align: center;
-    margin-bottom: 10px;
+    font-size: 1.8em;
+    margin: 0;
+  }
+
+  /* ======== CONTENIDO ======== */
+  main {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 25px;
+    padding: 0 20px 40px;
   }
 
   .panel {
-    width: 100%;
-    max-width: 800px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -31,35 +60,39 @@
   }
 
   .card {
-    flex: 1 1 320px;
-    background: rgba(255,255,255,0.7);
+    flex: 1 1 340px;
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    min-width: 280px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
   }
 
   .card h3 {
-    margin-top: 0;
     text-align: center;
     color: #0077c2;
+    margin-bottom: 15px;
   }
 
   label {
-    display: block;
-    margin-top: 10px;
     font-weight: 500;
     color: #003366;
+    display: block;
+    margin-top: 10px;
   }
 
   input, select {
     width: 100%;
     padding: 8px;
+    margin-top: 5px;
     border-radius: 10px;
     border: 1px solid #ccc;
     font-size: 1em;
-    margin-top: 5px;
   }
 
   button {
@@ -70,7 +103,7 @@
     border: none;
     border-radius: 10px;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
     cursor: pointer;
     transition: 0.3s;
   }
@@ -79,14 +112,14 @@
     background: #005b99;
   }
 
+  /* ======== CANVAS ======== */
   .canvas-container {
     width: 100%;
-    max-width: 800px;
     background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    margin-top: 20px;
-    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    margin-top: 30px;
+    padding: 15px;
   }
 
   canvas {
@@ -95,61 +128,95 @@
     display: block;
   }
 
+  /* ======== RESULTADOS ======== */
   .resultados {
     margin-top: 20px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
     padding: 15px;
     border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  footer {
+    text-align: center;
+    color: #444;
+    font-size: 0.9em;
+    padding: 15px;
+    margin-top: 40px;
   }
 
   @media (max-width: 600px) {
-    h2 { font-size: 1.4em; }
-    button { font-size: 0.9em; }
-    input, select { font-size: 0.9em; }
+    header h2 {
+      font-size: 1.3em;
+    }
+    .card {
+      flex: 1 1 100%;
+    }
   }
 </style>
 </head>
+
 <body>
-  <h2>⚙️ Simulador de Colisiones Elásticas e Inelásticas</h2>
 
-  <div class="panel">
-    <div class="card">
-      <h3>Parámetros de Entrada</h3>
-      <label>m₁ (kg): <input type="number" id="m1" value="1" step="0.1"></label>
-      <label>v₁ inicial (m/s): <input type="number" id="v1i" value="2" step="0.1"></label>
-      <label>m₂ (kg): <input type="number" id="m2" value="1" step="0.1"></label>
-      <label>v₂ inicial (m/s): <input type="number" id="v2i" value="-1" step="0.1"></label>
-      <label>Tipo de colisión:
-        <select id="tipoColision">
-          <option value="elastica">Elástica</option>
-          <option value="inelastica">Inelástica (choque juntos)</option>
-        </select>
-      </label>
-      <label>Tipo de cálculo:
-        <select id="tipoCalculo">
-          <option value="velocidad">Velocidad</option>
-          <option value="momento">Momento lineal</option>
-          <option value="energia">Energía cinética</option>
-        </select>
-      </label>
-      <button onclick="iniciar()">Iniciar simulador</button>
-      <button onclick="reiniciar()">Reiniciar</button>
+  <!-- ======== ENCABEZADO CON LOGO ======== -->
+  <header>
+    <a href="index.html">
+  <img src="img/image.png" alt="Logo ITCA-FEPADE" style="cursor: pointer; border: none;">
+</a>
+    <h2>⚙️ Simulador de Colisiones Elásticas e Inelásticas</h2>
+  </header>
+
+  <main>
+    <!-- ======== PANEL DE CONTROL Y RESULTADOS ======== -->
+    <div class="panel">
+      <div class="card">
+        <h3>🔧 Parámetros de Entrada</h3>
+        <label>m₁ (kg): <input type="number" id="m1" value="1" step="0.1"></label>
+        <label>v₁ inicial (m/s): <input type="number" id="v1i" value="2" step="0.1"></label>
+        <label>m₂ (kg): <input type="number" id="m2" value="1" step="0.1"></label>
+        <label>v₂ inicial (m/s): <input type="number" id="v2i" value="-1" step="0.1"></label>
+        <label>Tipo de colisión:
+          <select id="tipoColision">
+            <option value="elastica">Elástica</option>
+            <option value="inelastica">Inelástica (choque juntos)</option>
+          </select>
+        </label>
+        <label>Tipo de cálculo:
+          <select id="tipoCalculo">
+            <option value="velocidad">Velocidad</option>
+            <option value="momento">Momento lineal</option>
+            <option value="energia">Energía cinética</option>
+          </select>
+        </label>
+        <button onclick="iniciar()">▶ Iniciar simulador</button>
+        <button onclick="reiniciar()">🔄 Reiniciar</button>
+      </div>
+
+      <div class="card">
+        <h3>📊 Resultados</h3>
+        <div id="salida" class="resultados">—</div>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>Resultados</h3>
-      <div id="salida">—</div>
+    <!-- ======== CANVAS ======== -->
+    <div class="canvas-container">
+      <canvas id="canvas" width="700" height="250"></canvas>
     </div>
-  </div>
+  </main>
 
-  <div class="canvas-container">
-    <canvas id="canvas" width="700" height="250"></canvas>
-  </div>
+  <footer>
+    © <span id="year"></span> Simulador — Rosa Rivera
+  </footer>
 
+  <!-- ======== SCRIPT ORIGINAL SIN CAMBIOS ======== -->
   <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
     let animFrame = null;
 
     function iniciar() {

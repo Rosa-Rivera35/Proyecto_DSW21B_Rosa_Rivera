@@ -3,47 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulación Ley 1 de Newton - Tensiones</title>
+  <title>Simulación — Ley 1 de Newton: Tensiones</title>
   <style>
     body {
       background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 10px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
     }
 
-    h2 {
-      text-align: center;
+    header {
+      width: 100%;
+      background: #ffffffcc;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header img {
+      height: 47px; /* ≈1.25 cm */
+      width: auto;
+      margin-right: 15px;
+    }
+
+    header h2 {
       color: #003366;
-      margin-bottom: 10px;
+      font-size: 1.8em;
+      margin: 0;
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      margin-top: 20px;
+      padding: 0 20px 40px;
     }
 
     .panel {
-      width: 100%;
-      max-width: 800px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
+      margin-top: 20px;
     }
 
     .card {
-      flex: 1 1 300px;
-      background: rgba(255,255,255,0.6);
+      flex: 1 1 320px;
+      background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(10px);
-      padding: 15px;
+      padding: 20px;
       border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      min-width: 280px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
     }
 
     .card h3 {
-      margin-top: 0;
       text-align: center;
       color: #0077c2;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: 500;
+      color: #003366;
+      display: block;
+      margin-top: 10px;
     }
 
     input {
@@ -63,7 +101,7 @@
       border: none;
       border-radius: 10px;
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 15px;
       cursor: pointer;
       transition: 0.3s;
     }
@@ -74,12 +112,11 @@
 
     .canvas-container {
       width: 100%;
-      max-width: 800px;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      margin-top: 20px;
-      padding: 10px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      margin-top: 30px;
+      padding: 15px;
     }
 
     canvas {
@@ -88,53 +125,71 @@
       display: block;
     }
 
+    footer {
+      text-align: center;
+      color: #444;
+      font-size: 0.9em;
+      padding: 15px;
+      margin-top: 40px;
+    }
+
     @media (max-width: 600px) {
-      h2 {
-        font-size: 1.4em;
+      header h2 {
+        font-size: 1.3em;
       }
-      button {
-        font-size: 0.9em;
-      }
-      input {
-        font-size: 0.9em;
+      .card {
+        flex: 1 1 100%;
       }
     }
   </style>
 </head>
 <body>
-  <h2>🧠 Simulación Ley 1 de Newton - Tensiones</h2>
 
-  <div class="panel">
-    <div class="card">
-      <h3>Parámetros</h3>
-      <label>Masa (kg): <input type="number" id="masa" value="8" step="0.1"></label>
-      <label>Gravedad (m/s²): <input type="number" id="gravedad" value="9.8" step="0.1"></label>
-      <label>Ángulo θ₁ (°): <input type="number" id="angulo1" value="60" step="1"></label>
-      <label>Ángulo θ₂ (°): <input type="number" id="angulo2" value="30" step="1"></label>
-      <button onclick="calcularTensiones()">Calcular Tensiones</button>
-      <button onclick="reiniciarSimulacion()">Reiniciar Simulación</button>
+  <header>
+    <a href="index.html">
+  <img src="img/image.png" alt="Logo ITCA-FEPADE" style="cursor: pointer; border: none;">
+</a>
+    <h2>🧠 Simulación — Ley 1 de Newton (Tensiones)</h2>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="card">
+        <h3>🔧 Parámetros</h3>
+        <label>Masa (kg): <input type="number" id="masa" value="8" step="0.1"></label>
+        <label>Gravedad (m/s²): <input type="number" id="gravedad" value="9.8" step="0.1"></label>
+        <label>Ángulo θ₁ (°): <input type="number" id="angulo1" value="60" step="1"></label>
+        <label>Ángulo θ₂ (°): <input type="number" id="angulo2" value="30" step="1"></label>
+        <button onclick="calcularTensiones()">Calcular Tensiones</button>
+        <button onclick="reiniciarSimulacion()">Reiniciar Simulación</button>
+      </div>
+
+      <div class="card">
+        <h3>📊 Resultados</h3>
+        <p><strong>Peso:</strong> <span id="peso">–</span> N</p>
+        <p><strong>Tensión T₁:</strong> <span id="tension1">–</span> N</p>
+        <p><strong>Tensión T₂:</strong> <span id="tension2">–</span> N</p>
+      </div>
+    </section>
+
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
     </div>
+  </main>
 
-    <div class="card">
-      <h3>Resultados</h3>
-      <p><strong>Peso:</strong> <span id="peso">–</span> N</p>
-      <p><strong>Tensión T₁:</strong> <span id="tension1">–</span> N</p>
-      <p><strong>Tensión T₂:</strong> <span id="tension2">–</span> N</p>
-    </div>
-  </div>
-
-  <div class="canvas-container">
-    <canvas id="canvas"></canvas>
-  </div>
+  <footer>
+    © <span id="year"></span> Simulador — Rosa Rivera
+  </footer>
 
   <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
     const pesoSpan = document.getElementById('peso');
     const tension1Span = document.getElementById('tension1');
     const tension2Span = document.getElementById('tension2');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Ajustar tamaño del canvas según el contenedor
     function resizeCanvas() {
       canvas.width = canvas.clientWidth;
       canvas.height = 400;
@@ -152,7 +207,6 @@
       const peso = m * g;
       pesoSpan.textContent = peso.toFixed(2);
 
-      // Ecuaciones de equilibrio
       const T2 = peso / (Math.sin(theta1) + (Math.cos(theta1) / Math.cos(theta2)) * Math.sin(theta2));
       const T1 = (T2 * Math.cos(theta2)) / Math.cos(theta1);
 
@@ -171,7 +225,6 @@
       pesoSpan.textContent = "–";
       tension1Span.textContent = "–";
       tension2Span.textContent = "–";
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
@@ -181,7 +234,6 @@
       const cy = 250;
       const longitud = 150;
 
-      // Coordenadas de las cuerdas hacia arriba
       const x1 = cx - longitud * Math.cos(theta1);
       const y1 = cy - longitud * Math.sin(theta1);
       const x2 = cx + longitud * Math.cos(theta2);
@@ -192,21 +244,18 @@
       ctx.fillStyle = "black";
       ctx.font = "16px Arial";
 
-      // Tensión 1
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(x1, y1);
       ctx.stroke();
       ctx.fillText("T1=" + T1.toFixed(1) + "N", x1 - 50, y1 - 10);
 
-      // Tensión 2
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(x2, y2);
       ctx.stroke();
       ctx.fillText("T2=" + T2.toFixed(1) + "N", x2 + 10, y2 - 10);
 
-      // Peso
       ctx.strokeStyle = "red";
       ctx.beginPath();
       ctx.moveTo(cx, cy);
@@ -214,7 +263,6 @@
       ctx.stroke();
       ctx.fillText("Peso=" + peso.toFixed(1) + "N", cx + 10, cy + longitud / 2);
 
-      // Punto de unión
       ctx.fillStyle = "#000";
       ctx.beginPath();
       ctx.arc(cx, cy, 6, 0, Math.PI * 2);
