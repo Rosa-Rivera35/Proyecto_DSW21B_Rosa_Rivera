@@ -6,247 +6,305 @@
   <title>Equipo — Colaboradores</title>
   <meta name="description" content="Página de colaboradores: nombres, títulos, roles, contacto, biografías y fotos del equipo." />
 
-  <!-- Tailwind -->
+  <!-- Tailwind CDN (rápido para prototipos) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Fuente Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Google Fonts para tipografía más elegante -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Meta Open Graph simple -->
+  <meta property="og:title" content="Equipo — Colaboradores" />
+  <meta property="og:description" content="Conoce al equipo: roles, experiencia y contacto." />
 
   <style>
+    /* Aplicar fuente Inter */
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #e3d7ff 0%, #d1ecff 100%);
-      color: #333;
-      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
     }
 
-    header {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
+    /* Mejoras al estilo por encima de Tailwind */
     .card-photo {
       object-fit: cover;
-      height: 220px;
+      height: 200px;
       width: 100%;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    }
-
-    article {
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(12px);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
     }
-    article:hover {
+    @media (min-width: 1024px) {
+      .card-photo { height: 240px; }
+    }
+
+    /* Efectos hover en cards */
+    .card:hover .card-photo {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .p-6 h3 {
-      color: #4b3cae;
-    }
-
-    a {
-      color: #4b3cae;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    button {
-      transition: all 0.3s ease;
-    }
-
-    button:hover {
-      transform: scale(1.02);
-    }
-
-    footer {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.6);
-      border-top: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
     }
 
     /* Logo ITCA */
     .logo {
-      height: 47px;
+      height: 47px;  /* ≈ 1.25 cm */
       width: auto;
+      transition: opacity 0.3s ease;
+    }
+    .logo:hover {
+      opacity: 0.8;
     }
 
-    /* Animación suave */
-    main {
-      animation: fadeIn 0.7s ease both;
+    /* Gradiente de fondo sutil */
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Animación de entrada para cards */
+    .card {
+      animation: fadeInUp 0.6s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mejoras al lightbox */
+    #lightbox {
+      backdrop-filter: blur(5px);
+      transition: opacity 0.3s ease;
+    }
+    #lightbox.hidden {
+      opacity: 0;
+    }
+    #lightbox.flex {
+      opacity: 1;
     }
   </style>
 </head>
 
-<body>
-  <header class="py-6 px-8 flex items-center justify-between">
-    <div class="flex items-center space-x-4">
-      <a href="index.html">
-        <img src="img/Itca.png" alt="Logo ITCA-FEPADE" class="logo">
-      </a>
-      <div>
-        <h1 class="text-2xl font-semibold text-indigo-900">Equipo</h1>
-        <p class="text-sm text-indigo-600">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-gradient-to-r from-blue-600 to-teal-500 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
+      <!-- Logo + título -->
+      <div class="flex items-center space-x-4">
+        <a href="index.html">
+          <img src="img/Itca.png" alt="Logo ITCA-FEPADE" class="logo" style="cursor: pointer; border: none;">
+        </a>
+        <div>
+          <h1 class="text-2xl font-bold text-white">Equipo</h1>
+          <p class="text-sm text-blue-100">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>
+        </div>
       </div>
+      <nav class="text-sm text-white hidden md:flex space-x-4">
+        <a href="index.html" class="hover:text-blue-200 transition-colors">Inicio</a>
+        <a href="#equipo" class="hover:text-blue-200 transition-colors">Miembros</a>
+        <a href="#contacto" class="hover:text-blue-200 transition-colors">Contacto</a>
+      </nav>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-    <section class="mb-8">
-      <div class="bg-white p-6 rounded-2xl shadow-sm">
-        <h2 class="text-2xl font-bold">Nuestras desarrolladoras.</h2>
-        <p class="mt-2 text-gray-600">Esta página web ha sido elaborada por estudiantes de la Escuela Especializada en Ingeniería ITCA FEPADE, de la carrera Técnico en Ingeniería de Desarrollo de Software.</p>
-        <p class="mt-2 text-gray-600">Forma parte del módulo “Descripción de Fenómenos Físicos Aplicados a la Computación”, guiado por el Ing. Fredy Enrique Granadeño Ramos.</p>
-        <p class="mt-2 text-gray-600">El equipo está conformado por: Sindy Alicia Arias González, Nahomy Valentina Guardado Toloza, Thelma de los Ángeles Hernández Alvarado, Daeleny Yamidia Mendoza Chavez, Rosa Michelle Rivera Ibarra y Alison Azucena Salvador Hernández, pertenecientes al grupo DSW21-B.</p>
+    <!-- Intro -->
+    <section class="mb-12">
+      <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-users text-3xl text-blue-600 mr-4"></i>
+          <h2 class="text-3xl font-bold text-gray-800">Nuestras desarrolladoras</h2>
+        </div>
+        <p class="mt-4 text-gray-600 leading-relaxed">Esta página web ha sido elaborada por estudiantes de la Escuela Especializada en Ingeniería ITCA FEPADE, de la carrera Técnico en Ingeniería de Desarrollo de Software.</p>
+        <p class="mt-4 text-gray-600 leading-relaxed">Forma parte del módulo “Descripción de Fenómenos Físicos Aplicados a la Computación”, guiado por el Ing. Fredy Enrique Granadeño Ramos.</p>
+        <p class="mt-4 text-gray-600 leading-relaxed">El equipo está conformado por: Sindy Alicia Arias González, Nahomy Valentina Guardado Toloza, Thelma de los Ángeles Hernández Alvarado, Daeleny Yamidia Mendoza Chavez, Rosa Michelle Rivera Ibarra y Alison Azucena Salvador Hernández, pertenecientes al grupo DSW21-B.</p>
       </div>
     </section>
 
     <!-- Equipo -->
     <section id="equipo" class="mb-12">
-      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Conoce al Equipo</h2>
+      <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 
         <!-- Miembro 1 -->
-        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+        <article class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all card">
           <button class="w-full p-0 m-0 block" aria-label="Ver foto de Rosa Rivera" onclick="openLightbox('img/RosaRivera.jpg')">
             <img src="img/RosaRivera.jpg" alt="Rosa Rivera — Programadora" class="card-photo w-full">
           </button>
 
           <div class="p-6">
-            <h3 class="text-lg font-semibold">Rosa Michelle Rivera Ibarra</h3>
-            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+            <h3 class="text-xl font-semibold text-gray-800">Rosa Michelle Rivera Ibarra</h3>
+            <p class="text-sm text-teal-600 font-medium flex items-center">
+              <i class="fas fa-code mr-2"></i>Programadora
+            </p>
 
-            <!--<div class="mt-4 text-gray-700 text-sm">
-              <p><strong>Rol:</strong> </p>
-            </div>-->
-
-            <div class="mt-4 text-sm text-gray-600">
+            <div class="mt-4 text-sm text-gray-600 leading-relaxed">
               <p><strong>Biografía:</strong> Soy una programadora en formación, apasionada por la tecnología y el desarrollo de soluciones digitales. Me considero una persona responsable, comprometida y con gran disposición para aprender y adaptarme a nuevos desafíos. Cuento con conocimientos en desarrollo web y aplicaciones, adquiridos durante mi formación técnica en la Escuela Especializada en Ingeniería ITCA-FEPADE Megatec (Zacatecoluca) y a través de cursos complementarios en áreas tecnológicas. Me destaco por mi capacidad de adaptación, trabajo en equipo y resolución de problemas, siempre con una actitud proactiva y el deseo de seguir creciendo profesionalmente en el ámbito de la programación.</p>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-3 items-center">
-              <a href="mailto:ri1122881@gmail.com" class="text-sm hover:underline">ri1122881@gmail.com</a>
-              <a href="tel:+50375138938" class="text-sm hover:underline">+503 7513 8938</a>
+            <div class="mt-6 flex flex-wrap gap-4 items-center">
+              <a href="mailto:ri1122881@gmail.com" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-envelope mr-2"></i>ri1122881@gmail.com
+              </a>
+              <a href="tel:+50375138938" class="text-sm text-green-600 hover:text-green-800 flex items-center transition-colors">
+                <i class="fas fa-phone mr-2"></i>+503 7513 8938
+              </a>
             </div>
           </div>
         </article>
 
         <!-- Miembro 2 -->
-        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+        <article class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all card">
           <button class="w-full p-0 m-0 block" aria-label="Ver foto de Sindy Arias" onclick="openLightbox('img/Sindy.png')">
-            <img src="img/Sindy.png" alt="Sindy Arias — Programadora" class="card-photo w-full">
+            <img src="img/Sindy.png" alt="Sindy Arias — Programadora" class="card-photo w-full bg-gray-200 flex items-center justify-center">
+              <i class="fas fa-user text-4xl text-gray-400"></i>
+            </button>
           </button>
 
           <div class="p-6">
-            <h3 class="text-lg font-semibold">Sindy Alicia Arias González</h3>
-            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+            <h3 class="text-xl font-semibold text-gray-800">Sindy Alicia Arias González</h3>
+            <p class="text-sm text-teal-600 font-medium flex items-center">
+              <i class="fas fa-code mr-2"></i>Programadora
+            </p>
 
-            <div class="mt-4 text-sm text-gray-600">
-              <p><strong>Biografía:</strong> Soy estudiante del Técnico en Ingeniería de Desarrollo de Software en ITCA-FEPADE, Regional Zacatecoluca, con una profunda pasión por la tecnología, la innovación y el aprendizaje continuo. Mi formación me ha permitido desarrollar habilidades técnicas en programación, desarrollo web y móvil, bases de datos, frameworks modernos configuración de servidores y metodologías agiles, siempre con un enfoque en la eficiencia, la calidad y la mejora constante.
+            <div class="mt-4 text-sm text-gray-600 leading-relaxed">
+              <><strong>Biografía:</strong> Soy estudiante del Técnico en Ingeniería de Desarrollo de Software en ITCA-FEPADE, Regional Zacatecoluca, con una profunda pasión por la tecnología, la innovación y el aprendizaje continuo. Mi formación me ha permitido desarrollar habilidades técnicas en programación, desarrollo web y móvil, bases de datos, frameworks modernos configuración de servidores y metodologías agiles, siempre con un enfoque en la eficiencia, la calidad y la mejora constante.
 Me considero una persona creativa, proactiva y orientada a los resultados. Disfruto enfrentar nuevos desafíos tecnológicos, colaborar en equipo y transformar ideas en soluciones funcionales e innovadoras.
 Aspiro a crecer profesionalmente en el desarrollo de software, aplicando mis conocimientos para crear herramientas digitales que impulsen el cambio, optimicen procesos y generen un impacto positivo en la sociedad.</p>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-3 items-center">
-              <a href="mailto:sindyarias2019@gmail.com" class="text-sm hover:underline">sindyarias2019@gmail.com</a>
-              <a href="tel:+50372485537" class="text-sm hover:underline">+503 7248 5537</a>
+            <div class="mt-6 flex flex-wrap gap-4 items-center">
+              <a href="mailto:sindyarias2019@gmail.com" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-envelope mr-2"></i>sindyarias2019@gmail.com
+              </a>
+              <a href="tel:+50372485537" class="text-sm text-green-600 hover:text-green-800 flex items-center transition-colors">
+                <i class="fas fa-phone mr-2"></i>+503 7248 5537
+              </a>
             </div>
           </div>
         </article>
 
         <!-- Miembro 3 -->
-        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+        <article class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all card">
           <button class="w-full p-0 m-0 block" aria-label="Ver foto de Daeleny Mendoza" onclick="openLightbox('img/Daeleny.png')">
             <img src="img/Daeleny.png" alt="Daeleny Mendoza — Programadora" class="card-photo w-full">
           </button>
 
           <div class="p-6">
-            <h3 class="text-lg font-semibold">Daeleny Yamidia Mendoza Chavez</h3>
-            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+            <h3 class="text-xl font-semibold text-gray-800">Daeleny Yamidia Mendoza Chavez</h3>
+            <p class="text-sm text-teal-600 font-medium flex items-center">
+              <i class="fas fa-code mr-2"></i>Programadora
+            </p>
 
-            <div class="mt-4 text-sm text-gray-600">
+            <div class="mt-4 text-sm text-gray-600 leading-relaxed">
               <p><strong>Biografía:</strong> Soy una programadora en formación con un gran interés por la innovación tecnológica y la creación de herramientas digitales que faciliten la vida de las personas. Me considero una persona dedicada, organizada y con una fuerte motivación por seguir aprendiendo cada día.
 Durante mi formación técnica en la Escuela Especializada en Ingeniería ITCA-FEPADE, Zacatecoluca, he adquirido conocimientos en desarrollo web, diseño de interfaces y manejo de tecnologías modernas. Disfruto trabajar en equipo, compartir ideas y buscar soluciones creativas ante los desafíos.
 Mi objetivo es continuar fortaleciendo mis habilidades en programación y contribuir al desarrollo de proyectos que generen un impacto positivo en el entorno tecnológico.</p>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-3 items-center">
-              <a href="mailto:mendozadaeleny@gmail.com" class="text-sm hover:underline">mendozadaeleny@gmail.com</a>
-              <a href="tel:+50368359158" class="text-sm hover:underline">+503 6835 9158</a>
+            <div class="mt-6 flex flex-wrap gap-4 items-center">
+              <a href="mailto:mendozadaeleny@gmail.com" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-envelope mr-2"></i>mendozadaeleny@gmail.com
+              </a>
+              <a href="tel:+50368359158" class="text-sm text-green-600 hover:text-green-800 flex items-center transition-colors">
+                <i class="fas fa-phone mr-2"></i>+503 6835 9158
+              </a>
             </div>
           </div>
         </article>
 
         <!-- Miembro 4 -->
-        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+        <article class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all card">
           <button class="w-full p-0 m-0 block" aria-label="Ver foto de Thelma Hernández" onclick="openLightbox('img/Thelma.png')">
-            <img src="img/Thelma.png" alt="Thelma Hernández — Programadora" class="card-photo w-full">
+            <img src="img/Thelma.png" alt="Thelma Hernández — Programadora" class="card-photo w-full bg-gray-200 flex items-center justify-center">
+              <i class="fas fa-user text-4xl text-gray-400"></i>
+            </button>
           </button>
 
           <div class="p-6">
-            <h3 class="text-lg font-semibold">Thelma de los Ángeles Hernández Alvarado</h3>
-            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+            <h3 class="text-xl font-semibold text-gray-800">Thelma de los Ángeles Hernández Alvarado</h3>
+            <p class="text-sm text-teal-600 font-medium flex items-center">
+              <i class="fas fa-code mr-2"></i>Programadora
+            </p>
 
-            <div class="mt-4 text-sm text-gray-600">
-              <p><strong>Biografía:</strong> Soy estudiante del Técnico en Ingeniería en Desarrollo de Software en ITCA-FEPADE, Regional Zacatecoluca. Poseo una sólida pasión por la tecnología, la innovación y el aprendizaje continuo. A lo largo de mi formación he adquirido competencias en programación, desarrollo web y móvil, administración de bases de datos, frameworks modernos, configuración de servidores y aplicación de metodologías ágiles.
+            <div class="mt-4 text-sm text-gray-600 leading-relaxed">
+              <p><strong>Biografía:</strong>  Soy estudiante del Técnico en Ingeniería en Desarrollo de Software en ITCA-FEPADE, Regional Zacatecoluca. Poseo una sólida pasión por la tecnología, la innovación y el aprendizaje continuo. A lo largo de mi formación he adquirido competencias en programación, desarrollo web y móvil, administración de bases de datos, frameworks modernos, configuración de servidores y aplicación de metodologías ágiles.
 
 Me considero una persona comprometida, creativa y orientada a los resultados, con un enfoque constante en la eficiencia, la calidad y la mejora continua. Disfruto asumir nuevos desafíos tecnológicos, colaborar en equipos multidisciplinarios y transformar ideas en soluciones digitales innovadoras y funcionales.
 
-Aspiro a desarrollarme profesionalmente en el ámbito del desarrollo de software, contribuyendo con proyectos que optimicen procesos, impulsen la transformación digital y generen un impacto positivo en la sociedad.</p>
+Aspiro a desarrollarme profesionalmente en el ámbito del desarrollo de software, contribuyendo con proyectos que optimicen procesos, impulsen la transformación digital y generen un impacto positivo en la sociedad.</p></p>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-3 items-center">
-              <a href="mailto:hernandezthelma214@.com" class="text-sm hover:underline">hernandezthelma214@.com</a>
-              <a href="tel:+50379442553" class="text-sm hover:underline">+503 7944 2553</a>
+            <div class="mt-6 flex flex-wrap gap-4 items-center">
+              <a href="mailto:hernandezthelma214@.com" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-envelope mr-2"></i>hernandezthelma214@.com
+              </a>
+              <a href="tel:+50379442553" class="text-sm text-green-600 hover:text-green-800 flex items-center transition-colors">
+                <i class="fas fa-phone mr-2"></i>+503 7944 2553
+              </a>
             </div>
           </div>
         </article>
 
         <!-- Miembro 5 -->
-        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+        <article class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all card">
           <button class="w-full p-0 m-0 block" aria-label="Ver foto de Alison Salvador" onclick="openLightbox('img/Alison.png')">
-            <img src="img/Alison.png" alt="Alison Salvador — Programadora" class="card-photo w-full">
+            <img src="img/Alison.png" alt="Alison Salvador — Programadora" class="card-photo w-full bg-gray-200 flex items-center justify-center">
+              <i class="fas fa-user text-4xl text-gray-400"></i>
+            </button>
           </button>
 
           <div class="p-6">
-            <h3 class="text-lg font-semibold">Alison Azucena Salvador Hernández</h3>
-            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+            <h3 class="text-xl font-semibold text-gray-800">Alison Azucena Salvador Hernández</h3>
+            <p class="text-sm text-teal-600 font-medium flex items-center">
+              <i class="fas fa-code mr-2"></i>Programadora
+            </p>
 
-            <div class="mt-4 text-sm text-gray-600">
+            <div class="mt-4 text-sm text-gray-600 leading-relaxed">
               <p><strong>Biografía:</strong> Soy una programadora en formación apasionada por la innovación tecnológica y el desarrollo de soluciones digitales que mejoren la vida de las personas. Me considero una persona responsable, proactiva y con una gran disposición para aprender y superar nuevos retos cada día.
 Durante mi formación técnica en la Escuela Especializada en Ingeniería ITCA-FEPADE, Zacatecoluca, he adquirido conocimientos en desarrollo web, diseño de interfaces y en el uso de tecnologías modernas. Me gusta trabajar en equipo, compartir ideas y aportar creatividad en cada proyecto.
 Mi meta es seguir fortaleciendo mis habilidades en programación y participar en el desarrollo de proyectos que generen un impacto positivo en el ámbito tecnológico.</p>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-3 items-center">
-              <a href="mailto:alisonsalvador@gmail.com" class="text-sm hover:underline">alisonsalvador@gmail.com</a>
-              <a href="tel:+50371085198" class="text-sm hover:underline">+503 7108 5198</a>
+            <div class="mt-6 flex flex-wrap gap-4 items-center">
+              <a href="mailto:alisonsalvador@gmail.com" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-envelope mr-2"></i>alisonsalvador@gmail.com
+              </a>
+              <a href="tel:+50371085198" class="text-sm text-green-600 hover:text-green-800 flex items-center transition-colors">
+                <i class="fas fa-phone mr-2"></i>+503 7108 5198
+              </a>
             </div>
           </div>
         </article>
 
-        <!-- Miembro 4 -->
-        <article class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-shadow">
+        <!-- Miembro 6 -->
+        <article class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all card">
           <button class="w-full p-0 m-0 block" aria-label="Ver foto de Nahomy Guardado" onclick="openLightbox('img/Valentina.png')">
-            <img src="img/Valentina.png" alt="Nahomy Guardado — Programadora" class="card-photo w-full">
+            <img src="img/Valentina.png" alt="Nahomy Guardado — Programadora" class="card-photo w-full bg-gray-200 flex items-center justify-center">
+              <i class="fas fa-user text-4xl text-gray-400"></i>
+            </button>
           </button>
 
           <div class="p-6">
-            <h3 class="text-lg font-semibold">Nahomy Valentina Guardado Toloza</h3>
-            <p class="text-sm text-indigo-600 font-medium">Programadora</p>
+            <h3 class="text-xl font-semibold text-gray-800">Nahomy Valentina Guardado Toloza</h3>
+            <p class="text-sm text-teal-600 font-medium flex items-center">
+              <i class="fas fa-code mr-2"></i>Programadora
+            </p>
 
-            <div class="mt-4 text-sm text-gray-600">
+            <div class="mt-4 text-sm text-gray-600 leading-relaxed">
               <p><strong>Biografía:</strong> Soy Valentina, una programadora en formación apasionada por la tecnología y su capacidad para transformar el mundo. Me motiva profundamente crear herramientas digitales que no solo sean funcionales, sino que también aporten valor educativo y social. Me caracterizo por ser meticulosa, creativa y comprometida con el aprendizaje continuo.
 
 Actualmente estudio Técnico en Desarrollo de Software en la Escuela Especializada en Ingeniería ITCA-FEPADE, sede Zacatecoluca. Durante mi formación he desarrollado habilidades en desarrollo web, diseño de interfaces interactivas y el uso de tecnologías modernas como HTML, CSS, JavaScript y simulaciones educativas. Disfruto colaborar en equipo, compartir ideas y enfrentar desafíos con soluciones innovadoras.
@@ -254,47 +312,25 @@ Actualmente estudio Técnico en Desarrollo de Software en la Escuela Especializa
 Mi objetivo es seguir perfeccionando mis conocimientos en programación y contribuir a proyectos que generen un impacto positivo, especialmente en el ámbito educativo. Aspiro a construir simuladores visuales que ayuden a comprender conceptos complejos de manera clara y atractiva.</p>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-3 items-center">
-              <a href="tolozavalentina510@gmail.com" class="text-sm hover:underline">tolozavalentina510@gmail.com</a>
-              <a href="tel:+50360402428" class="text-sm hover:underline">+503 6040 2428</a>
+            <div class="mt-6 flex flex-wrap gap-4 items-center">
+              <a href="tolozavalentina510@gmail.com" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-envelope mr-2"></i>tolozavalentina510@gmail.com
+              </a>
+              <a href="tel:+50360402428" class="text-sm text-green-600 hover:text-green-800 flex items-center transition-colors">
+                <i class="fas fa-phone mr-2"></i>+503 6040 2428
+              </a>
             </div>
           </div>
         </article>
 
       </div>
     </section>
-  </main>
 
-  <footer class="text-center text-sm text-indigo-700 py-4 mt-12">
-    © <span id="year"></span> M3 — Rosa Rivera
-  </footer>
-
-  <!-- Lightbox y scripts sin cambios -->
-  <div id="lightbox" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50" role="dialog" aria-modal="true" onclick="closeLightbox()">
-    <div class="max-w-4xl w-full p-6">
-      <img id="lightbox-img" src="" alt="Foto ampliada" class="w-full rounded-lg shadow-lg max-h-[80vh] object-contain">
-      <div class="text-right mt-3">
-        <button class="bg-gradient-to-r from-indigo-400 to-purple-400 text-white px-4 py-2 rounded-xl shadow">Cerrar</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    function openLightbox(src) {
-      const lb = document.getElementById('lightbox');
-      const img = document.getElementById('lightbox-img');
-      img.src = src;
-      lb.classList.remove('hidden');
-      lb.classList.add('flex');
-    }
-    function closeLightbox(e) {
-      if (e) e.stopPropagation();
-      const lb = document.getElementById('lightbox');
-      lb.classList.remove('flex');
-      lb.classList.add('hidden');
-    }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-  </script>
-</body>
-</html>
+    <!-- Sección de contacto general 
+    <section id="contacto" class="mb-12">
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 p-8 rounded-3xl shadow-lg border border-gray-100">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-envelope text-3xl text-teal-600 mr-4"></i>
+          <h3 class="text-2xl font-semibold text-gray-800">Contacto General</h3>
+        </div>
+        <p class="mt-4 text-gray-600 leading-relaxed">Para consultas generales sobre el proyecto, envía un correo a <a href="mailto:contacto@itca-fepade-->
