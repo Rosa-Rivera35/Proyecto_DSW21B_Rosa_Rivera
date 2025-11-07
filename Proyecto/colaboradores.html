@@ -6,50 +6,104 @@
   <title>Equipo — Colaboradores</title>
   <meta name="description" content="Página de colaboradores: nombres, títulos, roles, contacto, biografías y fotos del equipo." />
 
-  <!-- Tailwind CDN (rápido para prototipos) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Meta Open Graph simple -->
-  <meta property="og:title" content="Equipo — Colaboradores" />
-  <meta property="og:description" content="Conoce al equipo: roles, experiencia y contacto." />
+  <!-- Fuente Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    /* Pequeñas mejoras al estilo por encima de Tailwind */
-    .card-photo { object-fit: cover; height: 200px; width: 100%; }
-    @media (min-width: 1024px) { .card-photo { height: 240px; } }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e3d7ff 0%, #d1ecff 100%);
+      color: #333;
+      min-height: 100vh;
+    }
+
+    header {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .card-photo {
+      object-fit: cover;
+      height: 220px;
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    article {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+    article:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .p-6 h3 {
+      color: #4b3cae;
+    }
+
+    a {
+      color: #4b3cae;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    footer {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.6);
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    }
 
     /* Logo ITCA */
     .logo {
-      height: 47px;  /* ≈ 1.25 cm */
+      height: 47px;
       width: auto;
     }
-    
+
+    /* Animación suave */
+    main {
+      animation: fadeIn 0.7s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800">
-  <header class="bg-white shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
-      <!-- Logo + título -->
-      <div class="flex items-center space-x-4">
-        <a href="index.html">
-  <img src="img/Itca.png" alt="Logo ITCA-FEPADE" style="cursor: pointer; border: none;">
-</a>
-        <div>
+<body>
+  <header class="py-6 px-8 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <a href="index.html">
+        <img src="img/Itca.png" alt="Logo ITCA-FEPADE" class="logo">
+      </a>
       <div>
-        <h1 class="text-xl font-semibold">Equipo</h1>
-        <p class="text-sm text-gray-500">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>
+        <h1 class="text-2xl font-semibold text-indigo-900">Equipo</h1>
+        <p class="text-sm text-indigo-600">Conoce a nuestros colaboradores: roles, biografías y contacto.</p>
       </div>
-      <nav class="text-sm text-gray-600">
-        <!--<a href="index.html" class="mr-4 hover:underline">Inicio</a>-->
-        <!--<a href="#equipo" class="mr-4 hover:underline">Miembros</a>
-        <a href="#contacto" class="hover:underline">Contacto</a>-->
-      </nav>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-    <!-- Intro -->
     <section class="mb-8">
       <div class="bg-white p-6 rounded-2xl shadow-sm">
         <h2 class="text-2xl font-bold">Nuestras desarrolladoras.</h2>
@@ -209,41 +263,24 @@ Mi objetivo es seguir perfeccionando mis conocimientos en programación y contri
 
       </div>
     </section>
-
-    <!-- Sección de contacto general (opcional) -->
-    <section id="contacto" class="mb-12">
-      <!--<div class="bg-white p-6 rounded-2xl shadow-sm">
-        <h3 class="text-lg font-semibold">Contacto general</h3>
-        <p class="mt-2 text-sm text-gray-600">Para consultas generales, envía un correo a <a href="mailto:contacto@ejemplo.com" class="hover:underline">contacto@ejemplo.com</a> o llama al <a href="tel:+50360000000" class="hover:underline">+503 6000 0000</a>.</p>
-      </div>-->
-    </section>
-
-    <!-- Notas: cómo editar 
-    <section class="text-sm text-gray-500">
-      <p><strong>Cómo personalizar esta página:</strong> reemplaza los bloques <code>&lt;article&gt;</code> para añadir/quitar miembros; cambia las URLs de las imágenes por fotos de alta calidad (formato .jpg o .webp recomendados). Mantén atributos <code>alt</code> descriptivos para accesibilidad.</p>
-    </section>-->
-
   </main>
 
-  <footer class="bg-white border-t mt-12">
-    <div class="max-w-7xl mx-auto p-4 text-center text-sm text-gray-500">© <span id="year"></span> M3 — Rosa Rivera</div>
+  <footer class="text-center text-sm text-indigo-700 py-4 mt-12">
+    © <span id="year"></span> M3 — Rosa Rivera
   </footer>
 
-  <!-- Lightbox simple -->
+  <!-- Lightbox y scripts sin cambios -->
   <div id="lightbox" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50" role="dialog" aria-modal="true" onclick="closeLightbox()">
     <div class="max-w-4xl w-full p-6">
       <img id="lightbox-img" src="" alt="Foto ampliada" class="w-full rounded-lg shadow-lg max-h-[80vh] object-contain">
       <div class="text-right mt-3">
-        <button class="bg-white text-gray-800 px-4 py-2 rounded-lg shadow" onclick="closeLightbox(event)">Cerrar</button>
+        <button class="bg-gradient-to-r from-indigo-400 to-purple-400 text-white px-4 py-2 rounded-xl shadow">Cerrar</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Año en el pie de página
     document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Lightbox básico
     function openLightbox(src) {
       const lb = document.getElementById('lightbox');
       const img = document.getElementById('lightbox-img');
@@ -254,16 +291,10 @@ Mi objetivo es seguir perfeccionando mis conocimientos en programación y contri
     function closeLightbox(e) {
       if (e) e.stopPropagation();
       const lb = document.getElementById('lightbox');
-      const img = document.getElementById('lightbox-img');
-      img.src = '';
       lb.classList.remove('flex');
       lb.classList.add('hidden');
     }
-
-    // Mejora de accesibilidad: cerrar con Escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeLightbox();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
   </script>
 </body>
 </html>

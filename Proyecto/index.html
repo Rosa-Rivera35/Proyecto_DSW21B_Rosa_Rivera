@@ -5,151 +5,480 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
+    :root {
+      --primary-color: #4a148c;
+      --secondary-color: #7b1fa2;
+      --accent-color: #ff6f00;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-color: #333;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     * { box-sizing: border-box; }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
-      background-color: #f4f7f6;
-    }
-
-    header {
-      background-color: #ffffff;
-      padding: 20px 30px;
-      text-align: center;
-      font-size: 29px;
-      color: rgb(23, 3, 139);
-      margin-bottom: 30px;
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
       position: relative;
     }
 
-    /* Logo ITCA FEPADE */
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    #three-js-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      opacity: 0.1;
+    }
+
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .preloader .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    header {
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      padding: 40px 50px;
+      text-align: center;
+      font-size: 36px;
+      color: var(--primary-color);
+      margin-bottom: 50px;
+      position: relative;
+      border-radius: 0 0 25px 25px;
+      box-shadow: var(--shadow);
+      animation: slideInFromTop 1.2s ease-out;
+      font-family: 'Orbitron', monospace;
+    }
+
+    @keyframes slideInFromTop {
+      from { opacity: 0; transform: translateY(-50px) rotateX(10deg); }
+      to { opacity: 1; transform: translateY(0) rotateX(0deg); }
+    }
+
     .logo {
       position: absolute;
-      top: 15px;
-      left: 25px;
-      height: 47px; /* ≈ 1.25 cm */
+      top: 25px;
+      left: 40px;
+      height: 55px;
       width: auto;
+      transition: var(--transition);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    .logo:hover {
+      transform: scale(1.15) rotate(5deg);
     }
 
     header a {
       text-decoration: none;
-      color: rgb(23, 3, 139);
-      font-weight: bold;
+      color: var(--primary-color);
+      font-weight: 700;
+      transition: var(--transition);
+      position: relative;
+      display: inline-block;
+    }
+
+    header a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 50%;
+      background: var(--accent-color);
+      transition: var(--transition);
+      transform: translateX(-50%);
+    }
+
+    header a:hover::after {
+      width: 100%;
+    }
+
+    header a:hover {
+      color: var(--secondary-color);
+      transform: translateY(-2px);
     }
 
     header p {
-      font-size: 18px;
-      color: #555;
+      font-size: 20px;
+      color: #666;
+      margin-top: 15px;
+      font-weight: 300;
     }
 
-    section {
-      margin-bottom: 50px;
+    .typed-text {
+      display: inline-block;
+      font-weight: 700;
+      color: var(--accent-color);
     }
 
-    .container {
-      margin-top: 30px;
+    .section-title {
+      text-align: center;
+      color: #fff;
+      font-size: 32px;
+      margin-bottom: 40px;
+      font-weight: 700;
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+      font-family: 'Orbitron', monospace;
+      position: relative;
+    }
+
+    .section-title::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--accent-color);
+      border-radius: 2px;
     }
 
     .simulador-card {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 40px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .simulador-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      transition: left 0.6s ease;
+      z-index: 1;
+    }
+
+    .simulador-card:hover::before {
+      left: 100%;
+    }
+
+    .simulador-card:hover {
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
     }
 
     .simulador-card h4 {
       text-align: center;
-      color: rgb(23, 3, 139);
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 22px;
+      position: relative;
+      z-index: 2;
     }
 
-    .simulador-card ul {
-      padding-left: 20px;
+    .simulador-card h4 a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .simulador-card h4 a:hover {
+      color: var(--secondary-color);
+      transform: scale(1.05);
+    }
+
+    .simulador-card ul, .simulador-card ol {
+      padding-left: 25px;
       font-size: 16px;
+      color: #555;
+      flex-grow: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .simulador-card li {
+      margin-bottom: 10px;
+      transition: var(--transition);
+    }
+
+    .simulador-card li:hover {
+      transform: translateX(5px);
+      color: var(--accent-color);
+    }
+
+    .icon {
+      font-size: 26px;
+      color: var(--primary-color);
+      margin-right: 12px;
+      transition: var(--transition);
+    }
+
+    .icon:hover {
+      color: var(--accent-color);
+      transform: rotate(10deg);
+    }
+
+    .card-link {
+      text-align: center;
+      margin-top: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-link a {
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      color: #fff;
+      padding: 12px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-block;
+      margin: 5px;
+      box-shadow: 0 4px 15px rgba(74, 20, 140, 0.3);
+      font-weight: 600;
+    }
+
+    .card-link a:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(74, 20, 140, 0.5);
+      background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
     }
 
     footer {
-      background-color: #ffffff;
-      padding: 10px;
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      padding: 25px;
       text-align: center;
-      color: rgba(59, 59, 59, 0.726);
-      margin-top: 50px;
+      color: #666;
+      margin-top: 70px;
+      border-radius: 25px 25px 0 0;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
 
-    @media (max-width: 600px) {
-      nav, article {
-        width: 100%;
-        height: auto;
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 25px;
+        font-size: 28px;
       }
       .logo {
         position: static;
         display: block;
-        margin: 0 auto 10px;
+        margin: 0 auto 15px;
+      }
+      .simulador-card {
+        padding: 20px;
+      }
+      .section-title {
+        font-size: 26px;
+      }
+      .card-link a {
+        padding: 10px 20px;
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
 
+<div class="preloader" id="preloader">
+  <div class="spinner"></div>
+</div>
+
+<canvas id="three-js-canvas"></canvas>
+<div id="particles-js"></div>
+
 <div class="container text-center">
-  <header>
+  <header data-aos="fade-down">
     <img src="img/Itca.png" alt="Logo ITCA-FEPADE" class="logo">
-    <h1>Simuladores de Física ⚛️</h1>
-    <a href="colaboradores.html">Conócenos</a>
-    <p>Simuladores educativos para el aprendizaje de la Física!</p>
+    <h1><i class="fas fa-atom icon"></i> Simuladores de Física ⚛️</h1>
+    <a href="colaboradores.html"><i class="fas fa-users icon"></i> Conócenos</a>
+    <p>Simuladores educativos para el aprendizaje de la Física con <span class="typed-text"></span>!</p>
   </header>
 </div>
 
-<section class="container">
-  <article class="simulador-card">
-    <h4>Simulador de Movimiento Newtoniano</h4>
-    <ol>
-      <li>Primera Ley de Newton (Inercia).</li>
-      <li>Segunda Ley de Newton (F = m·a).</li>
-      <li>Tercera Ley de Newton (Acción y Reacción).</li>
-    </ol>
-    <br>
-    <section class="conteiner">
-        <div class="row"><div class="col-sm-6">
-          <div class="simulador-card">
-            <h4><a href="primeraley.html">Primera ley de Newton</a></h4>
-            <h4><a href="segundaley.html">Segunda ley de Newton</a></h4>
-            <h4><a href="terceraley.html">Tercera ley de Newton</a></h4>
-          </div>
-        </div></div>
-      </section>
-  </article>
-
-  <article class="simulador-card">
-    <h4>Simulador de Colisiones Elásticas</h4>
-    <ul>
-      <li>Conservación del momento lineal: m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'.</li>
-      <li>Conservación de la energía cinética en colisiones elásticas.</li>
-    </ul>
-    <section class="container">
-      <div class="row">
-        <div class="col-sm-6">
-          <div class="simulador-card">
-            <h4><a href="colisionesElasticas.html">Colisiones Elásticas</a></h4>
-          </div>
+<section class="container" data-aos="fade-up" data-aos-delay="200">
+  <h2 class="section-title"><i class="fas fa-flask icon"></i> Explora Nuestros Simuladores</h2>
+  <div class="row">
+    <div class="col-md-6 col-sm-12" data-aos="zoom-in" data-aos-delay="300">
+      <div class="simulador-card">
+        <h4><i class="fas fa-balance-scale icon"></i> Simulador de Movimiento Newtoniano</h4>
+        <ol>
+          <li><i class="fas fa-infinity icon"></i> Primera Ley de Newton (Inercia).</li>
+          <li><i class="fas fa-equals icon"></i> Segunda Ley de Newton (F = m·a).</li>
+          <li><i class="fas fa-exchange-alt icon"></i> Tercera Ley de Newton (Acción y Reacción).</li>
+        </ol>
+        <div class="card-link">
+          <a href="primeraley.html"><i class="fas fa-play icon"></i> Explorar Primera Ley</a>
+          <a href="segundaley.html"><i class="fas fa-play icon"></i> Explorar Segunda Ley</a>
+          <a href="terceraley.html"><i class="fas fa-play icon"></i> Explorar Tercera Ley</a>
         </div>
       </div>
-    </section>
-  </article>
+    </div>
+    <div class="col-md-6 col-sm-12" data-aos="zoom-in" data-aos-delay="400">
+      <div class="simulador-card">
+        <h4><i class="fas fa-bolt icon"></i> Simulador de Colisiones Elásticas</h4>
+        <ul>
+          <li><i class="fas fa-chart-line icon"></i> Conservación del momento lineal: m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'.</li>
+          <li><i class="fas fa-battery-half icon"></i> Conservación de la energía cinética en colisiones elásticas.</li>
+        </ul>
+        <div class="card-link">
+          <a href="colisionesElasticas.html"><i class="fas fa-play icon"></i> Explorar Colisiones</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<footer>
+<footer data-aos="fade-up" data-aos-delay="500">
   <div class="max-w-7xl mx-auto p-4 text-center text-sm text-gray-500">
-    © <span id="year"></span> M3 — Rosa Rivera
+    <i class="fas fa-copyright icon"></i> <span id="year"></span> M3 — Sindy Arias
   </div>
 </footer>
 
 <script>
+  // Preloader
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.getElementById('preloader').classList.add('hidden');
+    }, 2000);
+  });
+
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  // Inicializar AOS
+  AOS.init({
+    duration: 1000,
+    once: true,
+    offset: 100
+  });
+
+  // Typed.js para subtítulo animado
+  var typed = new Typed('.typed-text', {
+    strings: ['interactividad', 'diversión', 'innovación', 'precisión'],
+    typeSpeed: 60,
+    backSpeed: 40,
+    loop: true
+  });
+
+  // Configurar Particles.js
+  particlesJS('particles-js', {
+    particles: {
+      number: { value: 80, density: { enable: true, value_area: 800 } },
+      color: { value: '#ffffff' },
+      shape: { type: 'circle' },
+      opacity: { value: 0.5, random: true },
+      size: { value: 3, random: true },
+      line_linked: { enable: true, distance: 150, color: '#ffffff', opacity: 0.4, width: 1 },
+      move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out' }
+    },
+    interactivity: {
+      detect_on: 'canvas',
+      events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+      modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+    },
+    retina_detect: true
+  });
+
+  // Three.js para fondo 3D sutil
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-js-canvas'), alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const geometry = new THREE.SphereGeometry(1, 32, 32);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  camera.position.z = 5;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.x += 0.005;
+    sphere.rotation.y += 0.005;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 </script>
 
 </body>

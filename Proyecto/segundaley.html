@@ -1,384 +1,613 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulación — Ley de Newton (F = m·a)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulación — Ley de Newton (F = m·a) — Carrito & Polea</title>
   <style>
     /* ======== ESTILO GENERAL ======== */
-    body {
-      background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+    :root{
+      --bg1: #667eea;
+      --bg2: #764ba2;
+      --panel-bg: rgba(255,255,255,0.95);
+    }
+    html,body{height:100%;margin:0}
+    body{
+      background: linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ======== ENCABEZADO ======== */
-    header {
-      width: 100%;
-      background: #ffffffcc;
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 15px 25px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    header{
+      width:100%;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px 20px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.18);
+      border-bottom:1px solid rgba(255,255,255,0.12);
     }
+    header img{height:44px;margin-right:14px}
+    header h2{margin:0;font-size:1.5rem;text-shadow:0 2px 6px rgba(0,0,0,0.35)}
 
-    header img {
-      height: 47px;
-      width: auto;
-      margin-right: 15px;
-    }
-
-    header h2 {
-      color: #003366;
-      font-size: 1.8em;
-      margin: 0;
-    }
-
-    /* ======== LAYOUT PRINCIPAL ======== */
-    main {
-      width: 100%;
-      max-width: 1100px;
-      margin-top: 20px;
-      padding: 0 20px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    nav {
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    nav a {
-      color: #0077c2;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: 600;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    .sim-wrapper {
-      display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      gap: 20px;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    .side {
-      flex: 1 1 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .card h3 {
-      text-align: center;
-      color: #0077c2;
-      margin-bottom: 15px;
-    }
-
-    label {
-      font-weight: 500;
-      color: #003366;
-      display: block;
-      margin-top: 10px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #0077c2;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-      margin-top: 12px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #005b99;
-    }
-
-    /* ======== SIMULADOR ======== */
+    /* SIMULADOR: contenedor grande arriba */
     .canvas-container {
-      flex: 2 1 600px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      width:92%;
+      max-width:1120px;
+      margin-top:26px;
+      background: var(--panel-bg);
+      border-radius:16px;
+      padding:14px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.18);
+      backdrop-filter: blur(8px);
     }
 
-    canvas {
-      width: 100%;
-      height: auto;
-      display: block;
+    /* adapt canvas to container */
+    #simulador {
+      width:100%;
+      height:420px; /* visual height; script sets actual resolution for crispness */
+      display:block;
+      border-radius:12px;
+      background: linear-gradient(to top, #eef6ff 0%, #f8fbff 45%);
+      box-shadow: inset 0 -8px 20px rgba(0,0,0,0.04);
     }
 
-    .ley-texto {
-      margin-top: 10px;
-      text-align: center;
-      background: rgba(255,255,255,0.85);
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 1em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    /* panel inferior: bloques de colores (lab-like) */
+    .panel{
+      width:92%;
+      max-width:1120px;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:14px;
+      margin:24px 0 40px;
     }
-
-    footer {
-      text-align: center;
-      color: #444;
-      font-size: 0.9em;
-      padding: 15px;
-      margin-top: 40px;
+    .bloque{
+      padding:16px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.12);
+      color:#fff;
     }
+    .azul{background:#2b7cff}
+    .morado{background:#8b5cf6}
+    .verde{background:#2bb673}
+    .naranja{background:#ff9a3c}
+    label{display:block;font-weight:700;margin-top:10px;font-size:0.95rem}
+    input,select{width:100%;padding:8px;border-radius:8px;border:none;margin-top:6px;font-size:0.95rem}
+    button{
+      width:100%;padding:10px;border-radius:8px;border:none;margin-top:10px;background:#fff;color:#222;font-weight:700;cursor:pointer;
+    }
+    button:hover{transform:translateY(-2px);background:#f2f2f2}
 
-    @media (max-width: 900px) {
-      .sim-wrapper {
-        flex-direction: column;
-        align-items: center;
-      }
-      .canvas-container {
-        width: 100%;
-      }
+    footer{color:#fff;padding:10px 0 40px}
+
+    @media (max-width:800px){
+      #simulador{height:300px}
+      header h2{font-size:1.15rem}
     }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="index.html">
+     <a href="index.html">
       <img src="img/Itca.png" alt="Logo ITCA-FEPADE" style="cursor: pointer; border: none;">
     </a>
-    <h2>🧠 Simulación — Ley de Newton (F = m·a)</h2>
+    <h1>Segunda Ley de Newton (F = m·a)</h1>
   </header>
 
-  <main>
-    <nav>
-      <a href="primeraley.html">Ley 1</a> |
-      <a href="segundaley.html">Ley 2</a> |
-      <a href="terceraley.html">Ley 3</a>
-    </nav>
+  <!-- SIMULADOR ARRIBA -->
+  <div class="canvas-container">
+    <canvas id="simulador"></canvas>
+  </div>
 
-    <div class="sim-wrapper">
-      <div class="side">
-        <div class="card">
-          <h3>🔧 Parámetros</h3>
-          <label>Masa m₁ (kg): <input type="number" id="m1" value="0.1"></label>
-          <label>Masa m₂ (kg): <input type="number" id="m2" value="0.1"></label>
-          <label>Gravedad (m/s²): <input type="number" id="g" value="9.8"></label>
-          <label>Fricción:
-            <select id="friccion">
-              <option value="0">Sin fricción</option>
-              <option value="0.2">Fricción</option>
-              <option value="0.4">Resistencia a la rodadura</option>
-            </select>
-          </label>
-          <label>Fuerza externa F (N): <input type="number" id="fuerzaExt" value="0" step="0.1"></label>
-          <button onclick="iniciarCompleta()">▶ Simulación completa</button>
-          <button onclick="avanzarPaso()">⏩ Avanzar</button>
-          <button onclick="reiniciar()">🔄 Reiniciar</button>
-        </div>
+  <!-- PANEL DE BLOQUES COLOREADOS ABAJO -->
+  <div class="panel">
+    <div class="bloque azul">
+      <h3>⚙️ Parámetros Físicos</h3>
+      <label>Masa m₁ (kg): <input type="number" id="m1" value="0.1" step="0.01"></label>
+      <label>Masa m₂ (kg): <input type="number" id="m2" value="0.1" step="0.01"></label>
+      <label>Gravedad (m/s²): <input type="number" id="g" value="9.8" step="0.1"></label>
+      <label>Fricción:
+        <select id="friccion">
+          <option value="0">Sin fricción</option>
+          <option value="0.2">Fricción</option>
+          <option value="0.4">Resistencia a la rodadura</option>
+        </select>
+      </label>
+    </div>
 
-        <div class="card">
-          <h3>📊 Resultados</h3>
-          <p>Fuerza: <span id="fuerza">–</span> N</p>
-          <p>Aceleración: <span id="aceleracion">–</span> m/s²</p>
-          <p>Velocidad: <span id="velocidad">–</span> m/s</p>
-          <p>Distancia: <span id="distancia">–</span> m</p>
-          <p>Tensión: <span id="tension">–</span> N</p>
-          <p class="cronometro">⏱️ <span id="cronometro">00.00 s</span></p>
-        </div>
-      </div>
+    <div class="bloque morado">
+      <h3>💪 Fuerza</h3>
+      <label>Fuerza externa F (N): <input type="number" id="fuerzaExt" value="0" step="0.1"></label>
+    </div>
 
-      <div class="canvas-container">
-        <canvas id="simulador" width="700" height="300"></canvas>
-        <div class="ley-texto">
-          ⚙️ Segunda Ley de Newton: la fuerza neta es igual a la masa por la aceleración (F = m · a).
-        </div>
+    <div class="bloque verde">
+      <h3>📈 Resultados</h3>
+      <div id="resultados">
+        <p>Fuerza: <span id="fuerza">–</span> N</p>
+        <p>Aceleración: <span id="aceleracion">–</span> m/s²</p>
+        <p>Velocidad: <span id="velocidad">–</span> m/s</p>
+        <p>Distancia: <span id="distancia">–</span> m</p>
+        <p>Tensión: <span id="tension">–</span> N</p>
+        <p>⏱️ <span id="cronometro">00.00 s</span></p>
       </div>
     </div>
-  </main>
 
-  <footer>
-    © <span id="year"></span> Simulador — Rosa Rivera
-  </footer>
+    <div class="bloque naranja">
+      <h3>🕹️ Controles</h3>
+      <button onclick="iniciarCompleta()">▶ Iniciar simulación</button>
+      <button onclick="avanzarPaso()">⏩ Avanzar</button>
+      <button onclick="reiniciar()">🔄 Reiniciar</button>
+    </div>
+  </div>
 
-  <!-- SCRIPT ORIGINAL -->
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+  <footer>© <span id="year"></span> Simulador — Sindy Arias</footer>
 
-    const canvas = document.getElementById('simulador');
-    const ctx = canvas.getContext('2d');
-    const cronometro = document.getElementById('cronometro');
-    const fuerzaSpan = document.getElementById('fuerza');
-    const aceleracionSpan = document.getElementById('aceleracion');
-    const velocidadSpan = document.getElementById('velocidad');
-    const distanciaSpan = document.getElementById('distancia');
-    const tensionSpan = document.getElementById('tension');
-    const fuerzaExtInput = document.getElementById('fuerzaExt');
-    const friccionSelect = document.getElementById('friccion');
+<script>
+/* ====== Inicialización de canvas para pantallas retina ====== */
+const canvas = document.getElementById('simulador');
+const ctx = canvas.getContext('2d');
 
-    let m1 = parseFloat(document.getElementById('m1').value) || 0.1;
-    let m2 = parseFloat(document.getElementById('m2').value) || 0.1;
-    let g = parseFloat(document.getElementById('g').value) || 9.8;
-    let fr = parseFloat(friccionSelect.value) || 0;
-    let fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
-    let a = 0, Fnet = 0, posM1 = 0, posM2 = 0, velocidad = 0, tiempo = 0, animando = false, lastTimestamp = null, tension = 0;
+function resizeCanvas() {
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  const cssWidth = canvas.clientWidth || canvas.offsetWidth || 900;
+  const cssHeight = parseInt(getComputedStyle(canvas).height, 10) || 420;
+  canvas.width = Math.floor(cssWidth * ratio);
+  canvas.height = Math.floor(cssHeight * ratio);
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
-    document.getElementById('m1').addEventListener('input', actualizarCalculos);
-    document.getElementById('m2').addEventListener('input', actualizarCalculos);
-    document.getElementById('g').addEventListener('input', actualizarCalculos);
-    friccionSelect.addEventListener('change', actualizarCalculos);
-    fuerzaExtInput.addEventListener('input', actualizarCalculos);
+/* ====== Elementos DOM y variables físicas (tu lógica preservada) ====== */
+document.getElementById('year').textContent = new Date().getFullYear();
 
-    function iniciarCompleta() { reiniciar(); animando = true; lastTimestamp = null; requestAnimationFrame(animar); }
-    function avanzarPaso() {
-      if (!animando) {
-        actualizarCalculos();
-        const paso = 0.01;
-        if (Math.abs(a) > 1e-6) {
-          velocidad += a * 0.1;
-          posM1 += Math.sign(a) * paso;
-          posM2 += Math.sign(a) * paso;
-          tiempo += 0.1;
-        }
-        actualizarDisplays();
-        dibujarEscena();
+const cronometro = document.getElementById('cronometro');
+const fuerzaSpan = document.getElementById('fuerza');
+const aceleracionSpan = document.getElementById('aceleracion');
+const velocidadSpan = document.getElementById('velocidad');
+const distanciaSpan = document.getElementById('distancia');
+const tensionSpan = document.getElementById('tension');
+const fuerzaExtInput = document.getElementById('fuerzaExt');
+const friccionSelect = document.getElementById('friccion');
+
+let m1 = parseFloat(document.getElementById('m1').value) || 0.1;
+let m2 = parseFloat(document.getElementById('m2').value) || 0.1;
+let g = parseFloat(document.getElementById('g').value) || 9.8;
+let fr = parseFloat(friccionSelect.value) || 0;
+let fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
+
+let a = 0, Fnet = 0;
+let posM1 = 0, posM2 = 0;      // posiciones normalizadas 0..1 (como antes)
+let velocidad = 0, tiempo = 0;
+let animando = false, lastTimestamp = null;
+let tension = 0;
+
+/* visual helpers */
+let wheelAngle = 0;
+let pulleyAngle = 0;
+
+/* Conectar inputs a cálculos */
+document.getElementById('m1').addEventListener('input', actualizarCalculos);
+document.getElementById('m2').addEventListener('input', actualizarCalculos);
+document.getElementById('g').addEventListener('input', actualizarCalculos);
+friccionSelect.addEventListener('change', actualizarCalculos);
+fuerzaExtInput.addEventListener('input', actualizarCalculos);
+
+/* Funciones control (idénticas en funcionalidad) */
+function iniciarCompleta(){ reiniciar(); animando=true; lastTimestamp=null; requestAnimationFrame(animar); }
+function avanzarPaso(){
+  if(!animando){
+    actualizarCalculos();
+    const paso = 0.01;
+    if(Math.abs(a) > 1e-6){
+      velocidad += a * 0.1;
+      posM1 += Math.sign(a) * paso;
+      posM2 += Math.sign(a) * paso;
+      tiempo += 0.1;
+    }
+    actualizarDisplays();
+    dibujarEscena();
+  }
+}
+function reiniciar(){
+  posM1 = posM2 = velocidad = tiempo = 0;
+  animando = false; lastTimestamp = null;
+  cronometro.textContent = "00.00 s";
+  actualizarCalculos(); dibujarEscena();
+}
+
+/* Cálculos físicos (idéntico al tuyo) */
+function actualizarCalculos(){
+  m1 = parseFloat(document.getElementById('m1').value) || 0;
+  m2 = parseFloat(document.getElementById('m2').value) || 0;
+  g = parseFloat(document.getElementById('g').value) || 9.8;
+  fr = parseFloat(friccionSelect.value) || 0;
+  fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
+
+  const peso2 = m2 * g;
+  const friccionMagnitud = fr * m1 * g;
+  const friccion = friccionMagnitud * -Math.sign(fuerzaExt + peso2);
+  Fnet = peso2 + fuerzaExt + friccion;
+  a = (m1 + m2) > 0 ? Fnet / (m1 + m2) : 0;
+  tension = m2 * g - m2 * a;
+
+  fuerzaSpan.textContent = Fnet.toFixed(2);
+  aceleracionSpan.textContent = a.toFixed(2);
+  tensionSpan.textContent = tension.toFixed(2);
+}
+
+function actualizarDisplays(){
+  velocidadSpan.textContent = velocidad.toFixed(2);
+  distanciaSpan.textContent = posM1.toFixed(2);
+  cronometro.textContent = tiempo.toFixed(2) + " s";
+}
+
+/* Animación principal (se conserva la lógica pero añadimos rotación visual) */
+function animar(timestamp){
+  if(!animando) return;
+  if(!lastTimestamp) lastTimestamp = timestamp;
+  const dt = Math.min(0.05, (timestamp - lastTimestamp)/1000);
+  lastTimestamp = timestamp;
+
+  actualizarCalculos();
+  velocidad += a * dt;
+  posM1 += velocidad * dt;
+  posM2 += velocidad * dt;
+  tiempo += dt;
+
+  // limitar posiciones normalizadas entre 0 y 1
+  if(posM1 < 0) posM1 = 0;
+  if(posM1 > 1.0){ posM1 = 1.0; velocidad = 0; animando=false; }
+  if(posM2 < 0) posM2 = 0;
+  if(posM2 > 1.0){ posM2 = 1.0; velocidad = 0; animando=false; }
+
+  // Actualizar rotaciones visuales en función de la velocidad
+  // ruedaRadio en px para cálculo aproximado de giro visual
+  const wheelRadius = 12;
+  wheelAngle += (velocidad * dt) * (1 / (2 * Math.PI * wheelRadius)) * 2 * Math.PI * 40; // factor ajustado para ver rotación
+  pulleyAngle += (velocidad * dt) * 0.8; // rotación de polea más lenta
+
+  actualizarDisplays();
+  dibujarEscena();
+
+  if(animando) requestAnimationFrame(animar);
+  else cronometro.textContent = "Finalizado";
+}
+
+/* =========================
+   DIBUJAR ESCENA (mejorada)
+   ========================= */
+function dibujarEscena(){
+  // retina-safe: canvas.width/height ya ajustados en resizeCanvas
+  const W = canvas.clientWidth;
+  const H = parseInt(getComputedStyle(canvas).height,10);
+
+  // clear
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // draw background subtle grid / lab floor
+  // (use device-independent coordinates because ctx scaled already)
+  ctx.save();
+  // soft gradient background (inside panel)
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#f6fbff');
+  g.addColorStop(0.5,'#eef6ff');
+  g.addColorStop(1,'#f4fbff');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  // ground plane (track)
+  const trackX = 60;
+  const trackY = Math.round(H * 0.65);
+  const trackWidth = Math.round(W - 120);
+  ctx.fillStyle = '#d7eef3';
+  ctx.fillRect(trackX, trackY - 6, trackWidth, 12);
+
+  // track base shading
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  ctx.fillRect(trackX, trackY + 6, trackWidth, 8);
+
+  // draw meter ticks on track
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=10;i++){
+    const x = trackX + (i*(trackWidth/10));
+    ctx.beginPath();
+    ctx.moveTo(x, trackY-10);
+    ctx.lineTo(x, trackY+10);
+    ctx.stroke();
+  }
+
+  // coordinates mapping for normalized positions:
+  const cartMin = trackX + 20; // leftmost cart x
+  const cartMax = trackX + trackWidth - 140; // rightmost cart x (keeps spacing to pulley)
+  const cartX = cartMin + posM1 * (cartMax - cartMin);
+
+  // polea position
+  const pulleyX = trackX + trackWidth - 60;
+  const pulleyY = trackY - 120;
+
+  // draw support beam to pulley
+  ctx.strokeStyle = '#8b9099';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(pulleyX, pulleyY - 50);
+  ctx.lineTo(pulleyX, pulleyY + 8);
+  ctx.stroke();
+
+  // draw pulley (metallic)
+  const pulleyR = 22;
+  // pulley shadow
+  ctx.beginPath();
+  ctx.arc(pulleyX + 6, pulleyY + 8, pulleyR + 6, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  ctx.fill();
+
+  // pulley body (metal)
+  const pg = ctx.createLinearGradient(pulleyX - pulleyR, pulleyY - pulleyR, pulleyX + pulleyR, pulleyY + pulleyR);
+  pg.addColorStop(0, '#d7dbe0');
+  pg.addColorStop(0.5, '#bfc4c9');
+  pg.addColorStop(1, '#dfe3e8');
+  ctx.beginPath();
+  ctx.arc(pulleyX, pulleyY, pulleyR, 0, Math.PI*2);
+  ctx.fillStyle = pg;
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#8b8f95';
+  ctx.stroke();
+
+  // pulley inner hub
+  ctx.beginPath();
+  ctx.arc(pulleyX, pulleyY, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#666';
+  ctx.fill();
+
+  // draw rope: from cart attach point -> pulley rim -> down to mass2
+  // cart attach point (right edge of cart top)
+  const attachX = cartX + 110; // adjust to cart width used below
+  const attachY = trackY - 40;
+
+  // compute mass2 position (vertical)
+  const mass2MinY = pulleyY + 24;
+  const mass2MaxY = pulleyY + 24 + 220; // maximum drop
+  const mass2Y = mass2MinY + posM2 * (mass2MaxY - mass2MinY);
+
+  // rope path
+  ctx.strokeStyle = '#3b3b3b';
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  ctx.moveTo(attachX, attachY);
+  // little sag to pulley entry point
+  const midX = pulleyX - 10;
+  const midY = pulleyY - 10;
+  ctx.quadraticCurveTo((attachX + midX)/2, attachY - 10, midX, midY);
+  // over pulley rim to down
+  // point on rim slightly offset to simulate wrap
+  const rimX = pulleyX + Math.cos(pulleyAngle) * pulleyR * 0.85;
+  const rimY = pulleyY + Math.sin(pulleyAngle) * pulleyR * 0.85;
+  ctx.lineTo(rimX, rimY);
+  ctx.lineTo(pulleyX, mass2Y);
+  ctx.stroke();
+
+  // draw cart (m1) as a stylized car / trolley
+  const cartW = 120;
+  const cartH = 36;
+  const cartY = trackY - cartH - 14; // vertical position of cart body
+  // shadow under cart
+  ctx.beginPath();
+  ctx.ellipse(cartX + cartW/2, trackY + 2, cartW*0.55, 12, 0, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.fill();
+
+  // cart body
+  ctx.fillStyle = '#2196f3';
+  roundRect(ctx, cartX, cartY, cartW, cartH, 8, true, false);
+
+  // cart cabin
+  ctx.fillStyle = '#1e88e5';
+  roundRect(ctx, cartX + 62, cartY - 18, 44, 18, 6, true, false);
+
+  // cart trim highlight
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(cartX + 8, cartY + 4, cartW - 16, cartH - 8);
+
+  // draw wheels with rotation
+  const wheelRadius = 12;
+  const wheel1X = cartX + 24;
+  const wheel2X = cartX + cartW - 24;
+  const wheelY = cartY + cartH + 8;
+
+  drawWheel(wheel1X, wheelY, wheelRadius, wheelAngle);
+  drawWheel(wheel2X, wheelY, wheelRadius, wheelAngle);
+
+  // label m1 and show its mass above the cart
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 14px Segoe UI';
+  ctx.fillText('m₁ = ' + (m1 || 0).toFixed(2) + ' kg', cartX + 8, cartY - 8);
+  ctx.font = '12px Segoe UI';
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  // small arrow/attachment point
+  ctx.beginPath();
+  ctx.arc(attachX - 4, attachY - 2, 3, 0, Math.PI*2);
+  ctx.fillStyle = '#555';
+  ctx.fill();
+
+  // draw mass 2 (hanging box)
+  const mass2W = 40;
+  const mass2H = 32;
+  const mass2X = pulleyX - mass2W/2;
+  ctx.fillStyle = '#e53935';
+  roundRect(ctx, mass2X, mass2Y, mass2W, mass2H, 6, true, false);
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.fillRect(mass2X + 4, mass2Y + mass2H + 2, mass2W - 8, 6);
+
+  // label m2
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 13px Segoe UI';
+  ctx.fillText('m₂ = ' + (m2 || 0).toFixed(2) + ' kg', mass2X - 2, mass2Y + mass2H + 22);
+
+  // tension visual (a small line on the rope near mass)
+  const tensionVis = Math.min(80, Math.abs(tension) * 4);
+  ctx.strokeStyle = 'rgba(0,180,0,0.9)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(pulleyX, mass2Y + mass2H/2);
+  ctx.lineTo(pulleyX, mass2Y + mass2H/2 - tensionVis);
+  ctx.stroke();
+  ctx.font = '12px Segoe UI';
+  ctx.fillStyle = '#000';
+  ctx.fillText('T=' + tension.toFixed(2) + ' N', pulleyX + 12, mass2Y + mass2H/2 - tensionVis/2);
+
+  ctx.restore();
+}
+
+/* Helper: rounded rectangle */
+function roundRect(ctx, x, y, w, h, r, fill, stroke){
+  if (typeof r === 'undefined') r = 5;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
+
+/* Helper: draw wheel with spokes */
+function drawWheel(cx, cy, r, angle){
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  // tire
+  ctx.beginPath();
+  ctx.arc(0,0,r,0,Math.PI*2);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+
+  // rim
+  ctx.beginPath();
+  ctx.arc(0,0,r*0.6,0,Math.PI*2);
+  ctx.fillStyle = '#666';
+  ctx.fill();
+
+  // spokes
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 2;
+  for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    const ax = Math.cos((i/6) * Math.PI*2) * (r*0.6);
+    const ay = Math.sin((i/6) * Math.PI*2) * (r*0.6);
+    ctx.lineTo(ax, ay);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ========== inicial draw ========== */
+actualizarCalculos();
+dibujarEscena();
+
+/* Exponer dibujarEscena al resto del script (ya usado por animar/avanzar etc.) */
+window.dibujarEscena = dibujarEscena;
+
+/* si el script físico original recalcula y llama dibujarEscena(), todo seguirá funcionando */
+</script>
+
+<!-- Mantengo tu script físico original en el mismo archivo para que controles y cálculos
+     sigan funcionando exactamente como antes. He adaptado nombres para evitar conflictos. -->
+<script>
+/* ======= Lógica física (copia de la tuya, adaptada para integrarse con la vista)
+   Observa: no he cambiado fórmulas; solo reorganicé para usar la misma función dibujarEscena() */
+(function(){
+  // variables ya definidas en el bloque anterior: m1,m2,g,fr,fuerzaExt,a,Fnet,tension,posM1,posM2,velocidad,tiempo,animando,lastTimestamp
+  const m1input = document.getElementById('m1');
+  const m2input = document.getElementById('m2');
+  const ginput  = document.getElementById('g');
+  const frinput = document.getElementById('friccion');
+  const fExtInput = document.getElementById('fuerzaExt');
+
+  // enlazamos eventos (si no estaban enlazados)
+  m1input.addEventListener('input', actualizarCalculos);
+  m2input.addEventListener('input', actualizarCalculos);
+  ginput.addEventListener('input', actualizarCalculos);
+  frinput.addEventListener('change', actualizarCalculos);
+  fExtInput.addEventListener('input', actualizarCalculos);
+
+  // re-definimos animar para usar lo que ya definimos anteriormente (esto actualiza rotaciones)
+  function animarOriginal(timestamp){
+    if(!animando) return;
+    if(!lastTimestamp) lastTimestamp = timestamp;
+    const dt = Math.min(0.05,(timestamp - lastTimestamp)/1000);
+    lastTimestamp = timestamp;
+
+    actualizarCalculos();
+
+    velocidad += a * dt;
+    posM1 += velocidad * dt;
+    posM2 += velocidad * dt;
+    tiempo += dt;
+
+    if(posM1 < 0) posM1 = 0;
+    if(posM1 > 1.0){ posM1 = 1.0; velocidad = 0; animando=false; }
+    if(posM2 < 0) posM2 = 0;
+    if(posM2 > 1.0){ posM2 = 1.0; velocidad = 0; animando=false; }
+
+    // visual rotations
+    wheelAngle += (velocidad * dt) * 0.6;
+    pulleyAngle += (velocidad * dt) * 0.35;
+
+    actualizarDisplays();
+    dibujarEscena();
+
+    if(animando) requestAnimationFrame(animarOriginal);
+    else cronometro.textContent = "Finalizado";
+  }
+
+  // sustituimos la función pública "iniciarCompleta" para usar este animarOriginal
+  window.iniciarCompleta = function(){ reiniciar(); animando = true; lastTimestamp = null; requestAnimationFrame(animarOriginal); }
+
+  // avanzar paso (usa tu misma lógica)
+  window.avanzarPaso = function(){
+    if(!animando){
+      actualizarCalculos();
+      const paso = 0.01;
+      if(Math.abs(a) > 1e-6){
+        velocidad += a * 0.1;
+        posM1 += Math.sign(a) * paso;
+        posM2 += Math.sign(a) * paso;
+        tiempo += 0.1;
       }
-    }
-    function reiniciar() {
-      posM1 = posM2 = velocidad = tiempo = 0;
-      animando = false;
-      lastTimestamp = null;
-      cronometro.textContent = "00.00 s";
-      actualizarCalculos();
-      dibujarEscena();
-    }
-    function actualizarCalculos() {
-      m1 = parseFloat(document.getElementById('m1').value) || 0;
-      m2 = parseFloat(document.getElementById('m2').value) || 0;
-      g = parseFloat(document.getElementById('g').value) || 9.8;
-      fr = parseFloat(friccionSelect.value) || 0;
-      fuerzaExt = parseFloat(fuerzaExtInput.value) || 0;
-      const peso2 = m2 * g;
-      const friccionMagnitud = fr * m1 * g;
-      const friccion = friccionMagnitud * -Math.sign(fuerzaExt + peso2);
-      Fnet = peso2 + fuerzaExt + friccion;
-      a = (m1 + m2) > 0 ? Fnet / (m1 + m2) : 0;
-      tension = m2 * g - m2 * a;
-      fuerzaSpan.textContent = Fnet.toFixed(2);
-      aceleracionSpan.textContent = a.toFixed(2);
-      tensionSpan.textContent = tension.toFixed(2);
-    }
-    function actualizarDisplays() {
-      velocidadSpan.textContent = velocidad.toFixed(2);
-      distanciaSpan.textContent = posM1.toFixed(2);
-      cronometro.textContent = tiempo.toFixed(2) + " s";
-    }
-    function animar(timestamp) {
-      if (!animando) return;
-      if (!lastTimestamp) lastTimestamp = timestamp;
-      const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
-      lastTimestamp = timestamp;
-      actualizarCalculos();
-      velocidad += a * dt;
-      posM1 += velocidad * dt;
-      posM2 += velocidad * dt;
-      tiempo += dt;
-      if (posM1 < 0) posM1 = 0;
-      if (posM1 > 1.0) { posM1 = 1.0; velocidad = 0; animando = false; }
-      if (posM2 < 0) posM2 = 0;
-      if (posM2 > 1.0) { posM2 = 1.0; velocidad = 0; animando = false; }
       actualizarDisplays();
       dibujarEscena();
-      if (animando) requestAnimationFrame(animar); else cronometro.textContent = "Finalizado";
     }
-    function dibujarEscena() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#b2f2d6';
-      ctx.fillRect(50, 140, 300, 30);
-      ctx.fillStyle = '#000';
-      ctx.textBaseline = 'middle';
-      for (let i = 0; i <= 10; i++) {
-        const x = 50 + (i * (300 / 10));
-        ctx.beginPath();
-        ctx.moveTo(x, 170);
-        ctx.lineTo(x, 175);
-        ctx.stroke();
-        ctx.fillText((i / 10).toFixed(1), x - 6, 155);
-      }
-      ctx.fillStyle = "#dcedc8";
-      ctx.fillRect(50, 150, 300, 20);
-      ctx.beginPath();
-      ctx.arc(350, 150, 10, 0, Math.PI * 2);
-      ctx.fillStyle = "#555";
-      ctx.fill();
-      const x1 = 100 + posM1 * 300;
-      const y2 = 150 + posM2 * 300;
-      ctx.strokeStyle = "#333";
-      ctx.beginPath();
-      ctx.moveTo(x1 + 25, 150);
-      ctx.lineTo(350, 150);
-      ctx.lineTo(350, y2);
-      ctx.stroke();
-      ctx.fillStyle = "#2196f3";
-      ctx.fillRect(x1, 130, 50, 20);
-      ctx.fillStyle = "#fff";
-      ctx.fillText("m₁", x1 + 20, 145);
-      ctx.fillStyle = "#e53935";
-      ctx.fillRect(340, y2, 20, 20);
-      ctx.fillStyle = "#fff";
-      ctx.fillText("m₂", 343, y2 + 15);
-      const tensionVis = Math.min(60, Math.abs(tension) * 20);
-      ctx.strokeStyle = "green";
-      ctx.fillStyle = "green";
-      ctx.beginPath();
-      ctx.moveTo(350, y2);
-      ctx.lineTo(350, y2 - tensionVis);
-      ctx.stroke();
-      ctx.fillStyle = '#000';
-      ctx.fillText('T=' + tension.toFixed(2) + 'N', 360, y2 - tensionVis / 2);
-    }
-    actualizarCalculos();
-    dibujarEscena();
-  </script>
+  }
+
+  window.reiniciar = function(){
+    posM1 = posM2 = velocidad = tiempo = 0;
+    animando = false; lastTimestamp = null;
+    cronometro.textContent = "00.00 s";
+    actualizarCalculos(); dibujarEscena();
+  }
+
+  // inicializamos calcs y dibujo
+  actualizarCalculos();
+  dibujarEscena();
+})();
+</script>
+
 </body>
 </html>
